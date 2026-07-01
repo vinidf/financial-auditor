@@ -51,10 +51,21 @@
   .opt.sel{background:var(--pos-soft);color:var(--pos);border-color:var(--pos);font-weight:600;}
   .opt.sel-neg{background:var(--neg-soft);color:var(--neg);border-color:var(--neg);font-weight:600;}
 
-  .slider{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:99px;background:var(--line);outline:none;margin:4px 0 2px;}
-  .slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;background:var(--brand);cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.2);border:3px solid #fff;}
-  .slider::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--brand);cursor:pointer;border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.2);}
-  .slider-labels{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted);margin-top:2px;}
+  .slider-wrap{position:relative;padding:6px 0;}
+  .slider-tick{position:absolute;left:50%;top:6px;bottom:6px;width:2px;background:var(--line);transform:translateX(-1px);pointer-events:none;}
+  .slider{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:99px;outline:none;position:relative;z-index:1;margin:0;
+    background:repeating-linear-gradient(to right,
+      var(--muted) 0, var(--muted) 2px,
+      var(--line) 2px, var(--line) calc(25% - 1px)
+    );
+    background-size:100% 4px;
+    background-repeat:no-repeat;
+    opacity:0.9;
+  }
+  .slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:28px;height:28px;border-radius:50%;background:var(--brand);cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.25);border:3px solid #fff;margin-top:0;}
+  .slider::-moz-range-thumb{width:28px;height:28px;border-radius:50%;background:var(--brand);cursor:pointer;border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.25);}
+  .slider::-webkit-slider-runnable-track{height:4px;}
+  .slider-labels{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted);margin-top:4px;}
   .slider-val{font-weight:700;font-variant-numeric:tabular-nums;}
   .slider-val.pos{color:var(--pos);}
   .slider-val.neg{color:var(--neg);}
@@ -199,10 +210,13 @@ function renderQuestions(){
   document.getElementById('questionsContainer').innerHTML = QUESTIONS.map(q => {
     if(q.type === 'slider'){
       return `<div class="q"><div class="qtext">${escapeHtml(q.text)}</div>
-        <input type="range" class="slider" min="0" max="100" value="50" step="1"
-          data-q="${q.id}" data-min="${q.min}" data-max="${q.max}" data-f="${q.f}"
-          data-text="${escapeHtml(q.text)}"
-          oninput="pickSlider('${q.id}')">
+        <div class="slider-wrap">
+          <div class="slider-tick"></div>
+          <input type="range" class="slider" min="0" max="4" value="2" step="1"
+            data-q="${q.id}" data-min="${q.min}" data-max="${q.max}" data-f="${q.f}"
+            data-text="${escapeHtml(q.text)}"
+            oninput="pickSlider('${q.id}')">
+        </div>
         <div class="slider-labels"><span>${escapeHtml(q.minLabel)}</span><span class="slider-val" id="sv_${q.id}">—</span><span>${escapeHtml(q.maxLabel)}</span></div>
       </div>`;
     }
@@ -214,9 +228,9 @@ function renderQuestions(){
 }
 function pickSlider(qid){
   const el = document.querySelector(`.slider[data-q="${qid}"]`);
-  const pos = parseInt(el.value,10);
+  const step = parseInt(el.value,10); // 0..4
   const min = parseFloat(el.dataset.min), max = parseFloat(el.dataset.max);
-  const w = Math.round(min + (max-min)*(pos/100));
+  const w = Math.round(min + (max-min)*(step/4));
   const text = el.dataset.text;
   const f = parseInt(el.dataset.f,10);
   const valEl = document.getElementById('sv_'+qid);
