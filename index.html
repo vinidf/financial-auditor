@@ -199,11 +199,11 @@ const QUESTIONS = [
   {id:'q_longterm', type:'buttons', f:2, text:'Is it worth it long-term?', opts:[
     {label:'Yes, clearly', w:14},{label:'Somewhat', w:0},{label:"Not worth it", w:-14}
   ]},
-  {id:'q_budget', type:'slider', f:3, text:'Does it fit your budget this month?',
-    min:-20, max:12, minLabel:"Won't cover", maxLabel:'Comfortable'},
   {id:'q_motive', type:'buttons', f:3, text:"What's driving this?", opts:[
     {label:'Thought it through', w:12},{label:'Wanted / liked it', w:-8},{label:'Impulse or pressure', w:-20}
   ]},
+  {id:'q_budget', type:'slider', f:3, text:'Does it fit your budget this month?',
+    min:-20, max:12, minLabel:"Won't cover", maxLabel:'Comfortable'},
 ];
 const CATEGORY_BASE = { essencial:42, ferramenta:25, lazer:-5, terceiro:-8 };
 const THRESHOLD = 45;
