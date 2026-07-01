@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Financial Auditor</title>
+<style>
+  :root{
+    --bg:#f4f5f3;
+    --card:#ffffff;
+    --ink:#1a1c1a;
+    --muted:#6b6f6a;
+    --line:#e6e8e4;
+    --brand:#1f5fd4;
+    --brand-soft:#e8f0fd;
+    --pos:#2f7d4f;
+    --neg:#c0392b;
+    --pos-soft:#e9f4ed;
+    --neg-soft:#fbebe8;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+    --shadow:0 1px 2px rgba(0,0,0,0.04),0 4px 16px rgba(0,0,0,0.05);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);min-height:100vh;padding:20px 14px 60px;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:560px;margin:0 auto;}
+
+  header{margin-bottom:20px;}
+  header h1{font-size:20px;font-weight:700;letter-spacing:-0.02em;}
+  header p{font-size:13px;color:var(--muted);margin-top:2px;}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:var(--shadow);margin-bottom:16px;}
+
+  .field{margin-bottom:14px;}
+  .field:last-child{margin-bottom:0;}
+  .field label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px;}
+  .field input, .field select{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--ink);font-family:var(--sans);font-size:15px;padding:11px 13px;border-radius:10px;}
+  .field input:focus, .field select:focus{outline:none;border-color:var(--brand);background:#fff;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+  .q{margin-bottom:16px;}
+  .q:last-child{margin-bottom:0;}
+  .q .qtext{font-size:14px;font-weight:600;margin-bottom:8px;}
+  .opts{display:flex;gap:7px;flex-wrap:wrap;}
+  .opt{
+    flex:1;min-width:calc(33% - 5px);text-align:center;
+    background:var(--bg);border:1.5px solid var(--line);color:var(--muted);
+    font-family:var(--sans);font-size:13px;font-weight:500;padding:10px 8px;border-radius:10px;cursor:pointer;
+    transition:all 0.12s;
+  }
+  .opt:hover{border-color:#cfd4cc;}
+  .opt.sel{background:var(--pos-soft);color:var(--pos);border-color:var(--pos);font-weight:600;}
+  .opt.sel-neg{background:var(--neg-soft);color:var(--neg);border-color:var(--neg);font-weight:600;}
+
+  .slider{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:99px;background:var(--line);outline:none;margin:4px 0 2px;}
+  .slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;background:var(--brand);cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.2);border:3px solid #fff;}
+  .slider::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--brand);cursor:pointer;border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.2);}
+  .slider-labels{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted);margin-top:2px;}
+  .slider-val{font-weight:700;font-variant-numeric:tabular-nums;}
+  .slider-val.pos{color:var(--pos);}
+  .slider-val.neg{color:var(--neg);}
+  .slider-val.zero{color:var(--muted);}
+
+  .btn{width:100%;background:var(--brand);color:#fff;border:none;font-family:var(--sans);font-weight:600;font-size:15px;padding:14px;border-radius:12px;cursor:pointer;box-shadow:var(--shadow);}
+  .btn:active{transform:translateY(1px);}
+
+  .result{display:none;}
+  .result.active{display:block;}
+  .result .rhead{font-size:13px;color:var(--muted);margin-bottom:2px;}
+  .result .rtitle{font-size:16px;font-weight:700;margin-bottom:16px;letter-spacing:-0.01em;}
+
+  .score-row{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+  .score-ring{flex-shrink:0;}
+  .score-bar-wrap{flex:1;}
+  .score-bar-bg{background:var(--bg);height:8px;border-radius:99px;overflow:hidden;}
+  .score-bar-fill{height:100%;border-radius:99px;transition:width 0.4s ease;}
+  .score-meta{font-size:12px;color:var(--muted);margin-top:6px;}
+
+  .sec{margin-bottom:16px;}
+  .sec h3{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:var(--muted);margin-bottom:8px;}
+  .factor{display:flex;justify-content:space-between;align-items:baseline;font-size:14px;padding:7px 0;border-bottom:1px solid var(--line);gap:10px;}
+  .factor:last-child{border-bottom:none;}
+  .factor .flabel{color:var(--ink);}
+  .factor .fval{font-weight:600;font-variant-numeric:tabular-nums;flex-shrink:0;}
+  .fval.pos{color:var(--pos);}
+  .fval.neg{color:var(--neg);}
+  .fval.zero{color:var(--muted);}
+
+  .verdict{border-radius:14px;padding:16px;margin-top:8px;}
+  .verdict.approved{background:var(--pos-soft);}
+  .verdict.veto{background:var(--neg-soft);}
+  .verdict .vlabel{font-size:17px;font-weight:800;letter-spacing:-0.01em;margin-bottom:2px;}
+  .verdict.approved .vlabel{color:var(--pos);}
+  .verdict.veto .vlabel{color:var(--neg);}
+  .verdict .vsub{font-size:12px;color:var(--muted);margin-bottom:12px;}
+  .verdict ol{padding-left:18px;font-size:14px;line-height:1.5;}
+  .verdict li{margin-bottom:4px;}
+
+  .history h2{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:var(--muted);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;}
+  #clearHistory{font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;text-transform:none;letter-spacing:0;}
+  .history-item{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer;box-shadow:var(--shadow);}
+  .hi-top{display:flex;justify-content:space-between;font-size:14px;font-weight:600;gap:10px;}
+  .hi-meta{font-size:12px;color:var(--muted);margin-top:3px;display:flex;align-items:center;gap:6px;}
+  .pill{font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;}
+  .pill.approved{background:var(--pos-soft);color:var(--pos);}
+  .pill.veto{background:var(--neg-soft);color:var(--neg);}
+  .empty{color:var(--muted);font-size:13px;text-align:center;padding:24px 0;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Financial Auditor</h1>
+    <p>Deterministic rules engine · <span id="historyCount">0 analyses</span></p>
+  </header>
+
+  <div class="card">
+    <div class="field">
+      <label>Item or reason</label>
+      <input type="text" id="itemName" placeholder="e.g. 35mm f/1.4 lens · Loan to John">
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>Amount ($)</label>
+        <input type="number" id="itemValue" step="0.01" placeholder="530.00">
+      </div>
+      <div class="field">
+        <label>Monthly slack ($)</label>
+        <input type="number" id="monthlyBudget" step="0.01" placeholder="optional">
+      </div>
+    </div>
+    <div class="field">
+      <label>Type of expense</label>
+      <select id="itemCategory">
+        <option value="essencial">Essential (maintenance / health / work)</option>
+        <option value="ferramenta">Tool / productive equipment</option>
+        <option value="lazer">Leisure / aesthetics / convenience</option>
+        <option value="terceiro">Help / loan to a third party</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="card" id="questionsCard">
+    <div id="questionsContainer"></div>
+  </div>
+
+  <button class="btn" onclick="runAnalysis()">Audit expense</button>
+
+  <div class="card result" id="resultEl" style="margin-top:16px;"></div>
+
+  <div class="history" style="margin-top:28px;">
+    <h2>History <span id="clearHistory">Clear</span></h2>
+    <div id="historyList"><div class="empty">No analysis recorded yet.</div></div>
+  </div>
+
+</div>
+
+<script>
+const STORAGE_KEY = 'auditor_v3_en';
+function loadHistory(){ try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); }catch(e){ return []; } }
+function saveHistory(a){ localStorage.setItem(STORAGE_KEY, JSON.stringify(a)); }
+function escapeHtml(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+// 8 questions. type:'buttons' (categorical) or 'slider' (continuous scale).
+// Sliders: min/max in points, mapped from 0-100 position.
+const QUESTIONS = [
+  {id:'q_need', type:'buttons', f:1, text:'Does this solve a real need right now?', opts:[
+    {label:'Yes, needed', w:18},{label:'Sort of', w:0},{label:'Can wait', w:-15}
+  ]},
+  {id:'q_alt', type:'buttons', f:1, text:'Is there a simpler or cheaper option?', opts:[
+    {label:'No, this is best', w:15},{label:'Maybe', w:0},{label:'Yes, alternative exists', w:-18}
+  ]},
+  {id:'q_use', type:'slider', f:2, text:'Will this get good use / return?',
+    min:-15, max:15, minLabel:'Little use', maxLabel:'Very useful'},
+  {id:'q_price', type:'buttons', f:2, text:'Is the price fair for the situation?', opts:[
+    {label:'Fair / reasonable', w:12},{label:'Acceptable', w:4},{label:'Too high', w:-12}
+  ]},
+  {id:'q_return', type:'slider', f:2, text:'Will you get this money back?',
+    min:-18, max:14, minLabel:"Won't recover", maxLabel:'Full recovery'},
+  {id:'q_longterm', type:'buttons', f:2, text:'Is it worth it long-term?', opts:[
+    {label:'Yes, clearly', w:14},{label:'Somewhat', w:0},{label:"Not worth it", w:-14}
+  ]},
+  {id:'q_budget', type:'slider', f:3, text:'Does it fit your budget this month?',
+    min:-20, max:12, minLabel:"Won't cover", maxLabel:'Comfortable'},
+  {id:'q_motive', type:'buttons', f:3, text:"What's driving this?", opts:[
+    {label:'Thought it through', w:12},{label:'Wanted / liked it', w:-8},{label:'Impulse or pressure', w:-20}
+  ]},
+];
+const CATEGORY_BASE = { essencial:42, ferramenta:25, lazer:-5, terceiro:-8 };
+const THRESHOLD = 45;
+const CATEGORY_LABEL = {
+  essencial:'Essential', ferramenta:'Tool / Productive Equipment',
+  lazer:'Leisure / Aesthetics / Convenience', terceiro:'Help / Loan to Third Party'
+};
+
+let selections = {};
+function renderQuestions(){
+  selections = {};
+  document.getElementById('questionsContainer').innerHTML = QUESTIONS.map(q => {
+    if(q.type === 'slider'){
+      return `<div class="q"><div class="qtext">${escapeHtml(q.text)}</div>
+        <input type="range" class="slider" min="0" max="100" value="50" step="1"
+          data-q="${q.id}" data-min="${q.min}" data-max="${q.max}" data-f="${q.f}"
+          data-text="${escapeHtml(q.text)}"
+          oninput="pickSlider('${q.id}')">
+        <div class="slider-labels"><span>${escapeHtml(q.minLabel)}</span><span class="slider-val" id="sv_${q.id}">—</span><span>${escapeHtml(q.maxLabel)}</span></div>
+      </div>`;
+    }
+    return `<div class="q"><div class="qtext">${escapeHtml(q.text)}</div><div class="opts">` +
+      q.opts.map((o,i) =>
+        `<div class="opt" data-q="${q.id}" data-i="${i}" onclick="pick('${q.id}',${i},${o.w},'${escapeHtml(q.text)}::${escapeHtml(o.label)}',${q.f})">${escapeHtml(o.label)}</div>`
+      ).join('') + '</div></div>';
+  }).join('');
+}
+function pickSlider(qid){
+  const el = document.querySelector(`.slider[data-q="${qid}"]`);
+  const pos = parseInt(el.value,10);
+  const min = parseFloat(el.dataset.min), max = parseFloat(el.dataset.max);
+  const w = Math.round(min + (max-min)*(pos/100));
+  const text = el.dataset.text;
+  const f = parseInt(el.dataset.f,10);
+  const valEl = document.getElementById('sv_'+qid);
+  valEl.textContent = (w>0?'+':'')+w;
+  valEl.className = 'slider-val ' + (w>0?'pos':(w<0?'neg':'zero'));
+  selections[qid] = {w, label:`${text}::${w>0?'favorable':(w<0?'unfavorable':'neutral')}`, f};
+}
+function pick(qid, i, w, label, f){
+  document.querySelectorAll(`.opt[data-q="${qid}"]`).forEach(el => el.classList.remove('sel','sel-neg'));
+  document.querySelector(`.opt[data-q="${qid}"][data-i="${i}"]`).classList.add(w < 0 ? 'sel-neg' : 'sel');
+  selections[qid] = {w, label, f};
+}
+
+function renderHistory(){
+  const hist = loadHistory();
+  document.getElementById('historyCount').textContent = hist.length + (hist.length===1?' analysis':' analyses');
+  const listEl = document.getElementById('historyList');
+  if(hist.length===0){ listEl.innerHTML = '<div class="empty">No analysis recorded yet.</div>'; return; }
+  listEl.innerHTML = hist.slice().reverse().map((h,idx) => {
+    const realIdx = hist.length-1-idx;
+    const cls = h.verdict.startsWith('APPROVED')?'approved':'veto';
+    const short = cls==='approved'?'APPROVED':'VETO';
+    return `<div class="history-item" onclick="showHistoryItem(${realIdx})">
+      <div class="hi-top"><span>${escapeHtml(h.item)}</span><span>$${escapeHtml(h.value)}</span></div>
+      <div class="hi-meta"><span class="pill ${cls}">${short}</span> score ${h.score} · ${h.date}</div></div>`;
+  }).join('');
+}
+function showHistoryItem(idx){
+  const h = loadHistory()[idx]; if(!h) return;
+  const r = document.getElementById('resultEl');
+  r.innerHTML = h.html; r.classList.add('active');
+  window.scrollTo({top:r.offsetTop-20, behavior:'smooth'});
+}
+document.getElementById('clearHistory').addEventListener('click', ()=>{
+  if(confirm('Clear all history?')){ saveHistory([]); renderHistory(); }
+});
+
+function fClass(w){ return w>0?'pos':(w<0?'neg':'zero'); }
+function fSign(w){ return (w>0?'+':'')+w; }
+
+function runAnalysis(){
+  const item = document.getElementById('itemName').value.trim() || 'Unnamed item';
+  const value = parseFloat(document.getElementById('itemValue').value) || 0;
+  const budget = parseFloat(document.getElementById('monthlyBudget').value) || 0;
+  const cat = document.getElementById('itemCategory').value;
+
+  let score = CATEGORY_BASE[cat];
+  const byFilter = {1:[],2:[],3:[]};
+  Object.values(selections).forEach(s => {
+    score += s.w;
+    const [q,a] = s.label.split('::');
+    byFilter[s.f].push({label:`${q}: ${a}`, w:s.w});
+  });
+
+  let budgetW = 0, budgetNote;
+  if(budget > 0){
+    const pct = (value/budget)*100;
+    if(pct > 30){ budgetW=-20; budgetNote = `${pct.toFixed(0)}% of monthly slack — above risk threshold`; }
+    else if(pct > 15){ budgetW=-8; budgetNote = `${pct.toFixed(0)}% of monthly slack — caution zone`; }
+    else { budgetNote = `${pct.toFixed(0)}% of monthly slack — marginal impact`; }
+    score += budgetW;
+  } else { budgetNote = 'Monthly slack not provided'; }
+  byFilter[2].push({label:`Budget: ${budgetNote}`, w:budgetW});
+
+  score = Math.max(0, Math.min(100, score));
+  const approved = score >= THRESHOLD;
+  const verdict = approved ? 'APPROVED' : 'REJECTED (VETO)';
+  const vClass = approved ? 'approved' : 'veto';
+  const barColor = approved ? 'var(--pos)' : 'var(--neg)';
+
+  [1,2,3].forEach(f => { if(byFilter[f].length===0) byFilter[f].push({label:'No factor selected — neutral', w:0}); });
+
+  const directives = !approved
+    ? ["Better not to proceed right now.", "Worth reconsidering if a negative factor changes."]
+    : ["You can go ahead.",
+       (budget>0 && (value/budget)*100>15) ? "Keep an eye on this month's budget." : "No budget concern."];
+
+  const secHtml = (n,title,arr) => `<div class="sec"><h3>${n}. ${title}</h3>` +
+    arr.map(x=>`<div class="factor"><span class="flabel">${escapeHtml(x.label)}</span><span class="fval ${fClass(x.w)}">${fSign(x.w)}</span></div>`).join('') + '</div>';
+
+  const html = `
+    <div class="result active">
+      <div class="rhead">${escapeHtml(CATEGORY_LABEL[cat])}</div>
+      <div class="rtitle">${escapeHtml(item)} — $${value.toFixed(2)}</div>
+      <div class="score-row">
+        <div class="score-bar-wrap">
+          <div class="score-bar-bg"><div class="score-bar-fill" style="width:${score}%;background:${barColor}"></div></div>
+          <div class="score-meta">Score ${score}/100 · base ${CATEGORY_BASE[cat]} · threshold ${THRESHOLD}</div>
+        </div>
+      </div>
+      ${secHtml(1,'Technical Viability / Asset',byFilter[1])}
+      ${secHtml(2,'Cost-Benefit / ROI',byFilter[2])}
+      ${secHtml(3,'Behavior / Habit',byFilter[3])}
+      <div class="verdict ${vClass}">
+        <div class="vlabel">${verdict}</div>
+        <div class="vsub">score ${score}/100 · approval threshold ${THRESHOLD}</div>
+        <ol>${directives.map(d=>`<li>${escapeHtml(d)}</li>`).join('')}</ol>
+      </div>
+    </div>`;
+
+  const r = document.getElementById('resultEl');
+  r.innerHTML = html; r.classList.add('active');
+  window.scrollTo({top:r.offsetTop-20, behavior:'smooth'});
+
+  const hist = loadHistory();
+  hist.push({item, value:value.toFixed(2), verdict, score, date:new Date().toLocaleDateString('en-US'), html});
+  saveHistory(hist); renderHistory();
+}
+
+renderQuestions();
+document.querySelectorAll('.slider').forEach(el => pickSlider(el.dataset.q));
+renderHistory();
+</script>
+</body>
+</html>
