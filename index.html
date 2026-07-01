@@ -171,6 +171,7 @@ const STORAGE_KEY = 'auditor_v3_en';
 function loadHistory(){ try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); }catch(e){ return []; } }
 function saveHistory(a){ localStorage.setItem(STORAGE_KEY, JSON.stringify(a)); }
 function escapeHtml(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+function jsAttr(s){ return escapeHtml(s).replace(/'/g, '&#39;'); }
 
 // 8 questions. type:'buttons' (categorical) or 'slider' (continuous scale).
 // Sliders: min/max in points, mapped from 0-100 position.
@@ -222,7 +223,7 @@ function renderQuestions(){
     }
     return `<div class="q"><div class="qtext">${escapeHtml(q.text)}</div><div class="opts">` +
       q.opts.map((o,i) =>
-        `<div class="opt" data-q="${q.id}" data-i="${i}" onclick="pick('${q.id}',${i},${o.w},'${escapeHtml(q.text)}::${escapeHtml(o.label)}',${q.f})">${escapeHtml(o.label)}</div>`
+        `<div class="opt" data-q="${q.id}" data-i="${i}" onclick="pick('${q.id}',${i},${o.w},'${jsAttr(q.text)}::${jsAttr(o.label)}',${q.f})">${escapeHtml(o.label)}</div>`
       ).join('') + '</div></div>';
   }).join('');
 }
