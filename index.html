@@ -263,13 +263,29 @@ function runAnalysis(){
   const budget = parseFloat(document.getElementById('monthlyBudget').value) || 0;
   const cat = document.getElementById('itemCategory').value;
 
-  let score = CATEGORY_BASE[cat];
+  // Low-ticket dampener: small expenses carry negligible financial risk,
+  // so penalties (urgency, impulse, etc.) count less. Without this, any
+  // "can wait"/"impulse" answer tanks the score the same for $20 or $2,000.
+  let ticketDampen = 1;
+  let ticketBonus = 0;
+  if(value > 0){
+    if(value <= 50){ ticketDampen = 0.4; ticketBonus = 10; }
+    else if(value <= 150){ ticketDampen = 0.65; ticketBonus = 5; }
+    else if(value <= 400){ ticketDampen = 0.85; ticketBonus = 0; }
+    // above 400: no dampening, full weight
+  }
+
+  let score = CATEGORY_BASE[cat] + ticketBonus;
   const byFilter = {1:[],2:[],3:[]};
   Object.values(selections).forEach(s => {
-    score += s.w;
+    const w = s.w < 0 ? Math.round(s.w * ticketDampen) : s.w;
+    score += w;
     const [q,a] = s.label.split('::');
-    byFilter[s.f].push({label:`${q}: ${a}`, w:s.w});
+    byFilter[s.f].push({label:`${q}: ${a}`, w});
   });
+  if(ticketBonus > 0){
+    byFilter[2].push({label:`Low ticket ($${value.toFixed(2)}) — negligible financial risk`, w:ticketBonus});
+  }
 
   let budgetW = 0, budgetNote;
   if(budget > 0){
