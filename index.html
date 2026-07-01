@@ -137,15 +137,9 @@
       <label>Item or reason</label>
       <input type="text" id="itemName" placeholder="e.g. 35mm f/1.4 lens · Loan to John">
     </div>
-    <div class="row2">
-      <div class="field">
-        <label>Amount ($)</label>
-        <input type="number" id="itemValue" step="0.01" placeholder="530.00">
-      </div>
-      <div class="field">
-        <label>Monthly slack ($)</label>
-        <input type="number" id="monthlyBudget" step="0.01" placeholder="optional">
-      </div>
+    <div class="field">
+      <label>Amount ($)</label>
+      <input type="number" id="itemValue" step="0.01" placeholder="530.00">
     </div>
     <div class="field">
       <label>Type of expense</label>
@@ -282,7 +276,6 @@ function fSign(w){ return (w>0?'+':'')+w; }
 function runAnalysis(){
   const item = document.getElementById('itemName').value.trim() || 'Unnamed item';
   const value = parseFloat(document.getElementById('itemValue').value) || 0;
-  const budget = parseFloat(document.getElementById('monthlyBudget').value) || 0;
   const cat = document.getElementById('itemCategory').value;
 
   // Low-ticket dampener: small expenses carry negligible financial risk,
@@ -309,16 +302,6 @@ function runAnalysis(){
     byFilter[2].push({label:`Low ticket ($${value.toFixed(2)}) — negligible financial risk`, w:ticketBonus});
   }
 
-  let budgetW = 0, budgetNote;
-  if(budget > 0){
-    const pct = (value/budget)*100;
-    if(pct > 30){ budgetW=-20; budgetNote = `${pct.toFixed(0)}% of monthly slack — above risk threshold`; }
-    else if(pct > 15){ budgetW=-8; budgetNote = `${pct.toFixed(0)}% of monthly slack — caution zone`; }
-    else { budgetNote = `${pct.toFixed(0)}% of monthly slack — marginal impact`; }
-    score += budgetW;
-  } else { budgetNote = 'Monthly slack not provided'; }
-  byFilter[2].push({label:`Budget: ${budgetNote}`, w:budgetW});
-
   score = Math.max(0, Math.min(100, score));
   const approved = score >= THRESHOLD;
   const verdict = approved ? 'APPROVED' : 'REJECTED (VETO)';
@@ -329,8 +312,7 @@ function runAnalysis(){
 
   const directives = !approved
     ? ["Better not to proceed right now.", "Worth reconsidering if a negative factor changes."]
-    : ["You can go ahead.",
-       (budget>0 && (value/budget)*100>15) ? "Keep an eye on this month's budget." : "No budget concern."];
+    : ["You can go ahead.", "No major concerns flagged."];
 
   const secHtml = (n,title,arr) => `<div class="sec"><h3>${n}. ${title}</h3>` +
     arr.map(x=>`<div class="factor"><span class="flabel">${escapeHtml(x.label)}</span><span class="fval ${fClass(x.w)}">${fSign(x.w)}</span></div>`).join('') + '</div>';
