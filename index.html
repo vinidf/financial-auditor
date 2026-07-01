@@ -51,20 +51,27 @@
   .opt.sel{background:var(--pos-soft);color:var(--pos);border-color:var(--pos);font-weight:600;}
   .opt.sel-neg{background:var(--neg-soft);color:var(--neg);border-color:var(--neg);font-weight:600;}
 
-  .slider-wrap{position:relative;padding:6px 0;}
+  .slider-wrap{position:relative;padding:6px 0;height:28px;box-sizing:content-box;}
   .slider-tick{position:absolute;left:50%;top:6px;bottom:6px;width:2px;background:var(--line);transform:translateX(-1px);pointer-events:none;}
-  .slider{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:99px;outline:none;position:relative;z-index:1;margin:0;
+  .slider{-webkit-appearance:none;appearance:none;width:100%;height:28px;outline:none;position:relative;z-index:1;margin:0;display:block;
+    background:none;
+  }
+  .slider::-webkit-slider-runnable-track{
+    height:4px;border-radius:99px;
     background:repeating-linear-gradient(to right,
       var(--muted) 0, var(--muted) 2px,
       var(--line) 2px, var(--line) calc(25% - 1px)
     );
-    background-size:100% 4px;
-    background-repeat:no-repeat;
-    opacity:0.9;
   }
-  .slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:28px;height:28px;border-radius:50%;background:var(--brand);cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.25);border:3px solid #fff;margin-top:0;}
+  .slider::-moz-range-track{
+    height:4px;border-radius:99px;
+    background:repeating-linear-gradient(to right,
+      var(--muted) 0, var(--muted) 2px,
+      var(--line) 2px, var(--line) calc(25% - 1px)
+    );
+  }
+  .slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:28px;height:28px;border-radius:50%;background:var(--brand);cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.25);border:3px solid #fff;margin-top:-12px;}
   .slider::-moz-range-thumb{width:28px;height:28px;border-radius:50%;background:var(--brand);cursor:pointer;border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.25);}
-  .slider::-webkit-slider-runnable-track{height:4px;}
   .slider-labels{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted);margin-top:4px;}
   .slider-val{font-weight:700;font-variant-numeric:tabular-nums;}
   .slider-val.pos{color:var(--pos);}
