@@ -284,9 +284,10 @@ function runAnalysis(){
   let ticketDampen = 1;
   let ticketBonus = 0;
   if(value > 0){
-    if(value <= 50){ ticketDampen = 0.4; ticketBonus = 10; }
-    else if(value <= 150){ ticketDampen = 0.65; ticketBonus = 5; }
-    else if(value <= 400){ ticketDampen = 0.85; ticketBonus = 0; }
+    if(value <= 30){ ticketDampen = 0.15; ticketBonus = 15; }
+    else if(value <= 50){ ticketDampen = 0.3; ticketBonus = 12; }
+    else if(value <= 150){ ticketDampen = 0.55; ticketBonus = 6; }
+    else if(value <= 400){ ticketDampen = 0.8; ticketBonus = 0; }
     // above 400: no dampening, full weight
   }
 
