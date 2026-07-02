@@ -307,7 +307,7 @@ const STORAGE_KEY = 'auditor_v3_en';
 function loadHistory(){ try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); }catch(e){ return []; } }
 function saveHistory(a){ localStorage.setItem(STORAGE_KEY, JSON.stringify(a)); }
 function escapeHtml(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
-function jsAttr(s){ return escapeHtml(s).replace(/'/g, '&#39;'); }
+function jsAttr(s){ return escapeHtml(s).replace(/'/g, '&#39;').replace(/"/g, '&quot;'); }
 
 const QUESTIONS = [
   {id:'q_need', type:'buttons', f:1, text:'Does this solve a real need right now?', opts:[
@@ -335,7 +335,7 @@ const QUESTIONS = [
   {id:'q_trigger', type:'buttons', f:3, text:'How did this item enter your radar?', opts:[
     {label:'I searched for it', w:10},{label:'Ad or algorithm', w:-10},{label:'Social media / someone else has it', w:-14}
   ]},
-  {id:'q_urgency', type:'buttons', f:3, text:'Is a sale, countdown, or "limited stock" pressuring the timing?', opts:[
+  {id:'q_urgency', type:'buttons', f:3, text:'Is a sale, countdown, or limited-stock warning pressuring the timing?', opts:[
     {label:'No pressure', w:8},{label:'Some', w:-8},{label:'Yes, deadline pressure', w:-16}
   ]},
   {id:'q_emotion', type:'buttons', f:3, text:'What is your emotional state right now?', opts:[
@@ -413,7 +413,7 @@ function renderQuizStep(){
         <div class="slider-tick"></div>
         <input type="range" class="slider" min="0" max="4" value="${prevStep}" step="1"
           data-q="${q.id}" data-min="${q.min}" data-max="${q.max}" data-f="${q.f}"
-          data-text="${escapeHtml(q.text)}"
+          data-text="${jsAttr(q.text)}"
           oninput="pickSlider('${q.id}')">
       </div>
       <div class="slider-labels"><span>${escapeHtml(q.minLabel)}</span><span class="slider-val" id="sv_${q.id}">—</span><span>${escapeHtml(q.maxLabel)}</span></div>
