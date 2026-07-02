@@ -316,6 +316,9 @@ const QUESTIONS = [
   {id:'q_own', type:'buttons', f:1, noDampen:true, text:'Do you already own something that does this?', opts:[
     {label:'No', w:10},{label:'Yes, but it fails', w:8},{label:'Yes, and it works', w:-25}
   ]},
+  {id:'q_pattern', type:'buttons', f:1, noDampen:true, text:'Have you bought similar items recently that are still unused or underused?', opts:[
+    {label:'None', w:8},{label:'One', w:-10},{label:'Several', w:-22}
+  ]},
   {id:'q_alt', type:'buttons', f:1, text:'Is there a simpler or cheaper option?', opts:[
     {label:'No, this is best', w:15},{label:'Maybe', w:0},{label:'Yes, alternative exists', w:-18}
   ]},
@@ -328,6 +331,15 @@ const QUESTIONS = [
     min:-18, max:14, minLabel:"Won't recover", maxLabel:'Full recovery'},
   {id:'q_longterm', type:'buttons', f:2, text:'Is it worth it long-term?', opts:[
     {label:'Yes, clearly', w:14},{label:'Somewhat', w:0},{label:"Not worth it", w:-14}
+  ]},
+  {id:'q_trigger', type:'buttons', f:3, text:'How did this item enter your radar?', opts:[
+    {label:'I searched for it', w:10},{label:'Ad or algorithm', w:-10},{label:'Social media / someone else has it', w:-14}
+  ]},
+  {id:'q_urgency', type:'buttons', f:3, text:'Is a sale, countdown, or "limited stock" pressuring the timing?', opts:[
+    {label:'No pressure', w:8},{label:'Some', w:-8},{label:'Yes, deadline pressure', w:-16}
+  ]},
+  {id:'q_emotion', type:'buttons', f:3, text:'What is your emotional state right now?', opts:[
+    {label:'Calm and neutral', w:8},{label:'Bored, stressed, or anxious', w:-12},{label:'Excited / euphoric', w:-10}
   ]},
   {id:'q_habit', type:'buttons', f:3, text:'Does this support a productive habit (health, work, skill)?', opts:[
     {label:'Yes, directly', w:14},{label:'Indirectly', w:4},{label:'No', w:-6}
@@ -352,11 +364,15 @@ let selections = {};
 const HINTS = {
   q_need:   'Pause. If you did not buy this today, what would actually break or stop working?',
   q_own:    'Open your drawer mentally. List what you already own that overlaps with this.',
+  q_pattern:'Recent purchases sitting unused are the strongest predictor of this one joining them.',
   q_alt:    'Name one cheaper way to solve the same problem. If you can, why not use it?',
   q_use:    'Count the realistic uses in the next 30 days. Not the ideal ones — the realistic ones.',
   q_price:  'Have you actually compared prices, or does it just feel acceptable?',
   q_return: 'Imagine this money is gone forever. Does the decision still feel right?',
   q_longterm:'Picture yourself with this item one year from now. Still using it?',
+  q_trigger:'Ads and algorithms are engineered to create wants you did not have five minutes ago.',
+  q_urgency:'Scarcity and countdowns are manufactured pressure. The deal will exist again.',
+  q_emotion:'Boredom, stress, and excitement all push the brain toward buying for the dopamine, not the item.',
   q_habit:  'Does this build something — a skill, your health, your work — or just fill a moment?',
   q_motive: 'What happened right before you wanted this? An ad? Stress? Boredom? A real problem?',
   q_budget: 'What else competes for this money this month? Name it before answering.'
@@ -549,6 +565,7 @@ function runAnalysis(){
 
   const DIRECTIVE_MAP = {
     q_own:    'Use what you already own — this purchase duplicates a working asset.',
+    q_pattern:'Stop the acquisition cycle — use or sell the unused items first.',
     q_motive: 'Wait 48 hours and re-evaluate — impulse fades, real need does not.',
     q_need:   'Postpone — revisit when it becomes an actual need.',
     q_alt:    'Check the cheaper alternative first before committing.',
@@ -557,7 +574,10 @@ function runAnalysis(){
     q_use:    'Low expected use — the cost-per-use does not justify it.',
     q_return: 'Treat this money as gone — only proceed if you accept the loss.',
     q_longterm:'Weak long-term value — reconsider whether it earns its keep.',
-    q_habit:  'No habit payoff — this is consumption, not investment.'
+    q_habit:  'No habit payoff — this is consumption, not investment.',
+    q_trigger:'This want was manufactured by an ad or feed — unfollow, mute, or block the source.',
+    q_urgency:'Ignore the countdown — manufactured scarcity is a sales tactic, not a reason.',
+    q_emotion:'Address the feeling directly — a walk, a call, a break — not the purchase.'
   };
   
   let directives;
@@ -581,12 +601,24 @@ function runAnalysis(){
   const q_motive_ans = selections.q_motive ? selections.q_motive.label.split('::')[1] : null;
   const q_own_ans = selections.q_own ? selections.q_own.label.split('::')[1] : null;
   const q_need_ans = selections.q_need ? selections.q_need.label.split('::')[1] : null;
+  const q_pattern_ans = selections.q_pattern ? selections.q_pattern.label.split('::')[1] : null;
+  const q_trigger_ans = selections.q_trigger ? selections.q_trigger.label.split('::')[1] : null;
+  const q_urgency_ans = selections.q_urgency ? selections.q_urgency.label.split('::')[1] : null;
+  const q_emotion_ans = selections.q_emotion ? selections.q_emotion.label.split('::')[1] : null;
   const q_budget_raw = selections.q_budget ? selections.q_budget.w : null;
   const q_return_raw = selections.q_return ? selections.q_return.w : null;
 
   const TIP_RULES = [
     { test: () => q_motive_ans === 'Impulse or pressure',
       tip: '⏸️ <strong>Impulse detector:</strong> Strong emotions can trigger spending. Try a 10-minute pause – walk, drink water, or breathe – before clicking "buy".' },
+    { test: () => q_pattern_ans === 'Several',
+      tip: '🔂 <strong>Acquisition loop:</strong> The buying high fades on arrival — that is why the last purchases sit unused. The next one will too. Break the loop, not the bank.' },
+    { test: () => q_urgency_ans === 'Yes, deadline pressure',
+      tip: '⏳ <strong>Manufactured scarcity:</strong> Countdowns and "only 3 left" are engineered pressure tactics. Real needs survive a sale ending. Fake ones don\u2019t.' },
+    { test: () => q_trigger_ans === 'Ad or algorithm' || q_trigger_ans === 'Social media / someone else has it',
+      tip: '🎯 <strong>Engineered want:</strong> You didn\u2019t find this item — it found you. Algorithms create desires on demand. Mute the source and see if the want survives a week.' },
+    { test: () => q_emotion_ans === 'Bored, stressed, or anxious',
+      tip: '🧘 <strong>Feeling, not filling:</strong> Boredom and stress push the brain to buy for the dopamine hit, not the item. Name the feeling and address it directly — the cart can wait.' },
     { test: () => cat === 'lazer' && score < 45,
       tip: '📦 <strong>30-day rule:</strong> For non-essential treats, write it down and wait 30 days. Chances are, the urge will pass.' },
     { test: () => q_motive_ans === 'Wanted / liked it' && score < 60,
@@ -608,7 +640,7 @@ function runAnalysis(){
     { test: () => score < 45 && !approved,
       tip: '🚧 <strong>Red light reflection:</strong> Your own scoring says no. Reflect on what feeling you\u2019re trying to solve – boredom, stress, envy – and address it without spending.' },
     { test: () => true,
-      tip: '💡 <strong>General grounding:</strong> "Things don\u2019t bring lasting happiness." Before buying, name three non-material things that brought you joy this week.' },
+      tip: '💡 <strong>Friction is your friend:</strong> Delete saved cards from apps and browsers. The 60 seconds it takes to find your card is often enough to break the impulse loop.' },
   ];
   const tips = [];
   for(const rule of TIP_RULES){
