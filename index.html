@@ -180,6 +180,9 @@ const QUESTIONS = [
   {id:'q_need', type:'buttons', f:1, text:'Does this solve a real need right now?', opts:[
     {label:'Yes, needed', w:18},{label:'Sort of', w:0},{label:'Can wait', w:-15}
   ]},
+  {id:'q_own', type:'buttons', f:1, noDampen:true, text:'Do you already own something that does this?', opts:[
+    {label:'No', w:10},{label:'Yes, but it fails', w:8},{label:'Yes, and it works', w:-25}
+  ]},
   {id:'q_alt', type:'buttons', f:1, text:'Is there a simpler or cheaper option?', opts:[
     {label:'No, this is best', w:15},{label:'Maybe', w:0},{label:'Yes, alternative exists', w:-18}
   ]},
@@ -192,6 +195,9 @@ const QUESTIONS = [
     min:-18, max:14, minLabel:"Won't recover", maxLabel:'Full recovery'},
   {id:'q_longterm', type:'buttons', f:2, text:'Is it worth it long-term?', opts:[
     {label:'Yes, clearly', w:14},{label:'Somewhat', w:0},{label:"Not worth it", w:-14}
+  ]},
+  {id:'q_habit', type:'buttons', f:3, text:'Does this support a productive habit (health, work, skill)?', opts:[
+    {label:'Yes, directly', w:14},{label:'Indirectly', w:4},{label:'No', w:-6}
   ]},
   {id:'q_motive', type:'buttons', f:3, text:'What is motivating this purchase?', opts:[
     {label:'Thought it through', w:12},{label:'Wanted / liked it', w:-8},{label:'Impulse or pressure', w:-20}
@@ -293,11 +299,13 @@ function runAnalysis(){
 
   let score = CATEGORY_BASE[cat] + ticketBonus;
   const byFilter = {1:[],2:[],3:[]};
-  Object.values(selections).forEach(s => {
-    const w = s.w < 0 ? Math.round(s.w * ticketDampen) : s.w;
+  Object.entries(selections).forEach(([qid, s]) => {
+    const qDef = QUESTIONS.find(q => q.id === qid);
+    const exempt = qDef && qDef.noDampen;
+    const w = (s.w < 0 && !exempt) ? Math.round(s.w * ticketDampen) : s.w;
     score += w;
     const [q,a] = s.label.split('::');
-    byFilter[s.f].push({label:`${q}: ${a}`, w});
+    byFilter[s.f].push({label:`${q}: ${a}`, w, qid});
   });
   if(ticketBonus > 0){
     byFilter[2].push({label:`Low ticket ($${value.toFixed(2)}) — negligible financial risk`, w:ticketBonus});
@@ -311,9 +319,32 @@ function runAnalysis(){
 
   [1,2,3].forEach(f => { if(byFilter[f].length===0) byFilter[f].push({label:'No factor selected — neutral', w:0}); });
 
-  const directives = !approved
-    ? ["Better not to proceed right now.", "Worth reconsidering if a negative factor changes."]
-    : ["You can go ahead.", "No major concerns flagged."];
+  // Context-aware directives: keyed to the specific negative factors flagged.
+  const DIRECTIVE_MAP = {
+    q_own:    'Use what you already own — this purchase duplicates a working asset.',
+    q_motive: 'Wait 48 hours and re-evaluate — impulse fades, real need does not.',
+    q_need:   'Postpone — revisit when it becomes an actual need.',
+    q_alt:    'Check the cheaper alternative first before committing.',
+    q_budget: 'This strains your month — delay until cash flow recovers.',
+    q_price:  'Search for a better price before buying.',
+    q_use:    'Low expected use — the cost-per-use does not justify it.',
+    q_return: 'Treat this money as gone — only proceed if you accept the loss.',
+    q_longterm:'Weak long-term value — reconsider whether it earns its keep.',
+    q_habit:  'No habit payoff — this is consumption, not investment.'
+  };
+  let directives;
+  if(!approved){
+    const negs = [1,2,3].flatMap(f => byFilter[f]).filter(x => x.w < 0 && x.qid).sort((a,b) => a.w - b.w);
+    directives = negs.slice(0,2).map(x => DIRECTIVE_MAP[x.qid]).filter(Boolean);
+    if(directives.length === 0) directives = ['Better not to proceed right now.'];
+    if(directives.length === 1) directives.push('Re-run the audit if any negative factor changes.');
+  } else {
+    const negs = [1,2,3].flatMap(f => byFilter[f]).filter(x => x.w < 0 && x.qid).sort((a,b) => a.w - b.w);
+    directives = ['You can go ahead.'];
+    directives.push(negs.length > 0 && DIRECTIVE_MAP[negs[0].qid]
+      ? 'Minor caveat: ' + DIRECTIVE_MAP[negs[0].qid].toLowerCase()
+      : 'No major concerns flagged.');
+  }
 
   const secHtml = (n,title,arr) => `<div class="sec"><h3>${n}. ${title}</h3>` +
     arr.map(x=>`<div class="factor"><span class="flabel">${escapeHtml(x.label)}</span><span class="fval ${fClass(x.w)}">${fSign(x.w)}</span></div>`).join('') + '</div>';
