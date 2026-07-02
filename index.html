@@ -230,6 +230,12 @@
   .pill.veto { background: var(--neg-soft); color: var(--neg); }
   
   .empty { color: var(--muted); font-size: 14px; font-weight: 500; text-align: center; padding: 32px 0; background: var(--card); border-radius: 12px; border: 1px dashed var(--line); }
+
+  .tips-banner { margin-top: 16px; background: #fef9f0; border: 1px solid #f5e6c8; border-radius: 14px; padding: 16px 18px; }
+  .tips-heading { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #b8860b; margin-bottom: 10px; }
+  .tip-line { font-size: 13.5px; line-height: 1.55; color: var(--ink); margin-bottom: 8px; }
+  .tip-line:last-child { margin-bottom: 0; }
+  .tip-line strong { font-weight: 700; }
 </style>
 </head>
 <body>
@@ -466,6 +472,50 @@ function runAnalysis(){
   const secHtml = (n,title,arr) => `<div class="sec"><h3>${n}. ${title}</h3>` +
     arr.map(x=>`<div class="factor"><span class="flabel">${escapeHtml(x.label)}</span><span class="fval ${fClass(x.w)}">${fSign(x.w)}</span></div>`).join('') + '</div>';
 
+  // Impulse-Aware Tips: pick up to 2 tips by priority order, no repeats.
+  const q_motive_ans = selections.q_motive ? selections.q_motive.label.split('::')[1] : null;
+  const q_own_ans = selections.q_own ? selections.q_own.label.split('::')[1] : null;
+  const q_need_ans = selections.q_need ? selections.q_need.label.split('::')[1] : null;
+  const q_budget_raw = selections.q_budget ? selections.q_budget.w : null;
+  const q_return_raw = selections.q_return ? selections.q_return.w : null;
+
+  const TIP_RULES = [
+    { test: () => q_motive_ans === 'Impulse or pressure',
+      tip: '⏸️ <strong>Impulse detector:</strong> Strong emotions can trigger spending. Try a 10-minute pause – walk, drink water, or breathe – before clicking "buy".' },
+    { test: () => cat === 'lazer' && score < 45,
+      tip: '📦 <strong>30-day rule:</strong> For non-essential treats, write it down and wait 30 days. Chances are, the urge will pass.' },
+    { test: () => q_motive_ans === 'Wanted / liked it' && score < 60,
+      tip: '🧠 <strong>Dopamine reality check:</strong> Our brain confuses wanting with liking. Visualize owning the item a month from now – will it still matter?' },
+    { test: () => q_budget_raw !== null && q_budget_raw < -5,
+      tip: '💰 <strong>Pay yourself first:</strong> If this purchase means sacrificing a bill or savings goal, picture the stress tomorrow. Wait until the next paycheck.' },
+    { test: () => q_own_ans === 'Yes, and it works',
+      tip: '🔁 <strong>Duplication trap:</strong> You already own something functional. Ask: "What specific problem does the new one solve that the old one can\u2019t?"' },
+    { test: () => cat === 'lazer' && value > 200,
+      tip: '📉 <strong>Cost-per-use test:</strong> Divide the price by the number of times you\u2019ll realistically use it in a year. A $400 jacket worn twice = $200 per wear. Is that acceptable?' },
+    { test: () => q_return_raw !== null && q_return_raw < -10,
+      tip: '💸 <strong>Sunk cost awareness:</strong> Treat this money as gone forever. If you wouldn\u2019t burn that cash in your hand, reconsider.' },
+    { test: () => cat === 'terceiro',
+      tip: '🤝 <strong>Guard your generosity:</strong> Lending to others can be noble, but never at the cost of your own stability. Have a direct conversation about expectations first.' },
+    { test: () => q_need_ans === 'Can wait',
+      tip: '🕰️ <strong>Urgency illusion:</strong> Almost nothing is truly urgent. If it can wait a week, let it – you\u2019ll make a clearer decision then.' },
+    { test: () => score >= 45 && approved,
+      tip: '✅ <strong>Intentional yes:</strong> Even when it\u2019s a good decision, sleep on it if the item is over $100. A 24-hour buffer rarely changes a solid plan.' },
+    { test: () => score < 45 && !approved,
+      tip: '🚧 <strong>Red light reflection:</strong> Your own scoring says no. Reflect on what feeling you\u2019re trying to solve – boredom, stress, envy – and address it without spending.' },
+    { test: () => true,
+      tip: '💡 <strong>General grounding:</strong> "Things don\u2019t bring lasting happiness." Before buying, name three non-material things that brought you joy this week.' },
+  ];
+  const tips = [];
+  for(const rule of TIP_RULES){
+    if(tips.length >= 2) break;
+    if(rule.test() && !tips.includes(rule.tip)) tips.push(rule.tip);
+  }
+  const tipsHtml = tips.length ? `
+      <div class="tips-banner">
+        <div class="tips-heading">💡 Smart Tips</div>
+        ${tips.map(t => `<div class="tip-line">${t}</div>`).join('')}
+      </div>` : '';
+
   const html = `
     <div class="result active">
       <div class="rhead">${escapeHtml(CATEGORY_LABEL[cat])}</div>
@@ -486,7 +536,7 @@ function runAnalysis(){
         <div class="vlabel">${verdict}</div>
         <div class="vsub">Final Score: ${score} / 100</div>
         <ol>${directives.map(d=>`<li>${escapeHtml(d)}</li>`).join('')}</ol>
-      </div>
+      </div>${tipsHtml}
     </div>`;
 
   const r = document.getElementById('resultEl');
