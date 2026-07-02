@@ -4,124 +4,232 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Financial Auditor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg:#f4f5f3;
-    --card:#ffffff;
-    --ink:#1a1c1a;
-    --muted:#6b6f6a;
-    --line:#e6e8e4;
-    --brand:#1f5fd4;
-    --brand-soft:#e8f0fd;
-    --pos:#2f7d4f;
-    --neg:#c0392b;
-    --pos-soft:#e9f4ed;
-    --neg-soft:#fbebe8;
-    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
-    --shadow:0 1px 2px rgba(0,0,0,0.04),0 4px 16px rgba(0,0,0,0.05);
+  :root {
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --ink: #0f172a;
+    --muted: #64748b;
+    --line: #e2e8f0;
+    --brand: #4f46e5;
+    --brand-hover: #4338ca;
+    --brand-soft: #e0e7ff;
+    --pos: #10b981;
+    --pos-soft: #d1fae5;
+    --neg: #f43f5e;
+    --neg-soft: #ffe4e6;
+    --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --radius: 16px;
+    --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{background:var(--bg);color:var(--ink);font-family:var(--sans);min-height:100vh;padding:20px 14px 60px;-webkit-font-smoothing:antialiased;}
-  .wrap{max-width:560px;margin:0 auto;}
-
-  header{margin-bottom:20px;}
-  header h1{font-size:20px;font-weight:700;letter-spacing:-0.02em;}
-  header p{font-size:13px;color:var(--muted);margin-top:2px;}
-
-  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:var(--shadow);margin-bottom:16px;}
-
-  .field{margin-bottom:14px;}
-  .field:last-child{margin-bottom:0;}
-  .field label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px;}
-  .field input, .field select{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--ink);font-family:var(--sans);font-size:15px;padding:11px 13px;border-radius:10px;}
-  .field input:focus, .field select:focus{outline:none;border-color:var(--brand);background:#fff;}
-  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-
-  .q{margin-bottom:16px;}
-  .q:last-child{margin-bottom:0;}
-  .q .qtext{font-size:14px;font-weight:600;margin-bottom:8px;}
-  .opts{display:flex;gap:7px;flex-wrap:wrap;}
-  .opt{
-    flex:1;min-width:calc(33% - 5px);text-align:center;
-    background:var(--bg);border:1.5px solid var(--line);color:var(--muted);
-    font-family:var(--sans);font-size:13px;font-weight:500;padding:10px 8px;border-radius:10px;cursor:pointer;
-    transition:all 0.12s;
+  
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    min-height: 100vh;
+    padding: 32px 16px 80px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
-  .opt:hover{border-color:#cfd4cc;}
-  .opt.sel{background:var(--pos-soft);color:var(--pos);border-color:var(--pos);font-weight:600;}
-  .opt.sel-neg{background:var(--neg-soft);color:var(--neg);border-color:var(--neg);font-weight:600;}
+  
+  .wrap { max-width: 580px; margin: 0 auto; }
 
-  .slider-wrap{position:relative;padding:6px 0;height:28px;box-sizing:content-box;}
-  .slider-tick{position:absolute;left:50%;top:6px;bottom:6px;width:2px;background:var(--line);transform:translateX(-1px);pointer-events:none;}
-  .slider{-webkit-appearance:none;appearance:none;width:100%;height:28px;outline:none;position:relative;z-index:1;margin:0;display:block;
-    background:none;
+  header { text-align: center; margin-bottom: 32px; }
+  header h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.03em; color: var(--ink); }
+  header p { font-size: 14px; font-weight: 500; color: var(--muted); margin-top: 4px; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 24px;
+    transition: var(--transition);
   }
-  .slider::-webkit-slider-runnable-track{
-    height:4px;border-radius:99px;
-    background:repeating-linear-gradient(to right,
-      var(--muted) 0, var(--muted) 2px,
-      var(--line) 2px, var(--line) calc(25% - 1px)
-    );
+  .card:hover { box-shadow: var(--shadow); }
+
+  .field { margin-bottom: 20px; }
+  .field:last-child { margin-bottom: 0; }
+  .field label { display: block; font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.02em; }
+  .field input, .field select {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 500;
+    padding: 14px 16px;
+    border-radius: 12px;
+    transition: var(--transition);
+    appearance: none;
   }
-  .slider::-moz-range-track{
-    height:4px;border-radius:99px;
-    background:repeating-linear-gradient(to right,
-      var(--muted) 0, var(--muted) 2px,
-      var(--line) 2px, var(--line) calc(25% - 1px)
-    );
+  .field select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    background-size: 16px;
+    padding-right: 40px;
   }
-  .slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:28px;height:28px;border-radius:50%;background:var(--brand);cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.25);border:3px solid #fff;margin-top:-12px;}
-  .slider::-moz-range-thumb{width:28px;height:28px;border-radius:50%;background:var(--brand);cursor:pointer;border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.25);}
-  .slider-labels{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted);margin-top:4px;}
-  .slider-val{font-weight:700;font-variant-numeric:tabular-nums;}
-  .slider-val.pos{color:var(--pos);}
-  .slider-val.neg{color:var(--neg);}
-  .slider-val.zero{color:var(--muted);}
+  .field input:focus, .field select:focus {
+    outline: none;
+    border-color: var(--brand);
+    background: var(--card);
+    box-shadow: 0 0 0 4px var(--brand-soft);
+  }
 
-  .btn{width:100%;background:var(--brand);color:#fff;border:none;font-family:var(--sans);font-weight:600;font-size:15px;padding:14px;border-radius:12px;cursor:pointer;box-shadow:var(--shadow);}
-  .btn:active{transform:translateY(1px);}
+  .q { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--line); }
+  .q:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+  .q .qtext { font-size: 15px; font-weight: 600; margin-bottom: 12px; color: var(--ink); line-height: 1.4; }
+  
+  .opts { display: flex; gap: 8px; flex-wrap: wrap; }
+  .opt {
+    flex: 1;
+    min-width: calc(33.333% - 8px);
+    text-align: center;
+    background: var(--card);
+    border: 1.5px solid var(--line);
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 12px 8px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: var(--transition);
+    user-select: none;
+  }
+  .opt:hover { border-color: var(--muted); color: var(--ink); transform: translateY(-1px); }
+  .opt:active { transform: translateY(0); }
+  
+  .opt.sel { background: var(--pos-soft); color: var(--pos); border-color: var(--pos); font-weight: 600; box-shadow: 0 0 0 2px var(--pos-soft); }
+  .opt.sel-neg { background: var(--neg-soft); color: var(--neg); border-color: var(--neg); font-weight: 600; box-shadow: 0 0 0 2px var(--neg-soft); }
 
-  .result{display:none;}
-  .result.active{display:block;}
-  .result .rhead{font-size:13px;color:var(--muted);margin-bottom:2px;}
-  .result .rtitle{font-size:16px;font-weight:700;margin-bottom:16px;letter-spacing:-0.01em;}
+  .slider-wrap { position: relative; padding: 12px 0; height: 32px; box-sizing: content-box; }
+  .slider-tick { position: absolute; left: 50%; top: 12px; bottom: 12px; width: 2px; background: var(--line); transform: translateX(-1px); pointer-events: none; }
+  .slider { -webkit-appearance: none; appearance: none; width: 100%; height: 32px; outline: none; position: relative; z-index: 1; margin: 0; display: block; background: none; }
+  
+  .slider::-webkit-slider-runnable-track {
+    height: 6px; border-radius: 99px;
+    background: var(--line);
+  }
+  .slider::-moz-range-track {
+    height: 6px; border-radius: 99px;
+    background: var(--line);
+  }
+  
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--card); cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    border: 3px solid var(--brand);
+    margin-top: -11px;
+    transition: transform 0.1s;
+  }
+  .slider::-webkit-slider-thumb:hover { transform: scale(1.1); }
+  
+  .slider::-moz-range-thumb {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--card); cursor: pointer;
+    border: 3px solid var(--brand);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    transition: transform 0.1s;
+  }
+  .slider::-moz-range-thumb:hover { transform: scale(1.1); }
+  
+  .slider-labels { display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 500; color: var(--muted); margin-top: 8px; }
+  .slider-val { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; background: var(--bg); padding: 2px 10px; border-radius: 20px; }
+  .slider-val.pos { color: var(--pos); background: var(--pos-soft); }
+  .slider-val.neg { color: var(--neg); background: var(--neg-soft); }
+  .slider-val.zero { color: var(--muted); border: 1px solid var(--line); }
 
-  .score-row{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
-  .score-ring{flex-shrink:0;}
-  .score-bar-wrap{flex:1;}
-  .score-bar-bg{background:var(--bg);height:8px;border-radius:99px;overflow:hidden;}
-  .score-bar-fill{height:100%;border-radius:99px;transition:width 0.4s ease;}
-  .score-meta{font-size:12px;color:var(--muted);margin-top:6px;}
+  .btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--brand), var(--brand-hover));
+    color: #fff;
+    border: none;
+    font-family: var(--sans);
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 0.01em;
+    padding: 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    transition: var(--transition);
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4); }
+  .btn:active { transform: translateY(0); box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3); }
 
-  .sec{margin-bottom:16px;}
-  .sec h3{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:var(--muted);margin-bottom:8px;}
-  .factor{display:flex;justify-content:space-between;align-items:baseline;font-size:14px;padding:7px 0;border-bottom:1px solid var(--line);gap:10px;}
-  .factor:last-child{border-bottom:none;}
-  .factor .flabel{color:var(--ink);}
-  .factor .fval{font-weight:600;font-variant-numeric:tabular-nums;flex-shrink:0;}
-  .fval.pos{color:var(--pos);}
-  .fval.neg{color:var(--neg);}
-  .fval.zero{color:var(--muted);}
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
-  .verdict{border-radius:14px;padding:16px;margin-top:8px;}
-  .verdict.approved{background:var(--pos-soft);}
-  .verdict.veto{background:var(--neg-soft);}
-  .verdict .vlabel{font-size:17px;font-weight:800;letter-spacing:-0.01em;margin-bottom:2px;}
-  .verdict.approved .vlabel{color:var(--pos);}
-  .verdict.veto .vlabel{color:var(--neg);}
-  .verdict .vsub{font-size:12px;color:var(--muted);margin-bottom:12px;}
-  .verdict ol{padding-left:18px;font-size:14px;line-height:1.5;}
-  .verdict li{margin-bottom:4px;}
+  .result { display: none; }
+  .result.active { display: block; animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+  
+  .result .rhead { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--brand); margin-bottom: 4px; }
+  .result .rtitle { font-size: 20px; font-weight: 800; margin-bottom: 20px; letter-spacing: -0.02em; color: var(--ink); }
 
-  .history h2{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:var(--muted);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;}
-  #clearHistory{font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;text-transform:none;letter-spacing:0;}
-  .history-item{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer;box-shadow:var(--shadow);}
-  .hi-top{display:flex;justify-content:space-between;font-size:14px;font-weight:600;gap:10px;}
-  .hi-meta{font-size:12px;color:var(--muted);margin-top:3px;display:flex;align-items:center;gap:6px;}
-  .pill{font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;}
-  .pill.approved{background:var(--pos-soft);color:var(--pos);}
-  .pill.veto{background:var(--neg-soft);color:var(--neg);}
-  .empty{color:var(--muted);font-size:13px;text-align:center;padding:24px 0;}
+  .score-row { margin-bottom: 24px; padding: 16px; background: var(--bg); border-radius: 12px; border: 1px solid var(--line); }
+  .score-bar-wrap { flex: 1; }
+  .score-bar-bg { background: var(--line); height: 10px; border-radius: 99px; overflow: hidden; margin-bottom: 8px; }
+  .score-bar-fill { height: 100%; border-radius: 99px; transition: width 1s cubic-bezier(0.16, 1, 0.3, 1); width: 0; }
+  .score-meta { font-size: 13px; font-weight: 500; color: var(--muted); display: flex; justify-content: space-between; }
+  .score-meta strong { color: var(--ink); }
+
+  .sec { margin-bottom: 24px; }
+  .sec h3 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 12px; border-bottom: 2px solid var(--line); padding-bottom: 6px; }
+  .factor { display: flex; justify-content: space-between; align-items: baseline; font-size: 14px; padding: 10px 0; border-bottom: 1px solid var(--line); gap: 12px; }
+  .factor:last-child { border-bottom: none; padding-bottom: 0; }
+  .factor .flabel { color: var(--ink); font-weight: 500; line-height: 1.4; }
+  .factor .fval { font-weight: 700; font-variant-numeric: tabular-nums; flex-shrink: 0; padding: 2px 8px; border-radius: 6px; }
+  .fval.pos { background: var(--pos-soft); color: var(--pos); }
+  .fval.neg { background: var(--neg-soft); color: var(--neg); }
+  .fval.zero { background: var(--bg); color: var(--muted); border: 1px solid var(--line); }
+
+  .verdict { border-radius: 16px; padding: 20px; margin-top: 24px; border: 1px solid transparent; }
+  .verdict.approved { background: linear-gradient(to bottom right, #f0fdf4, #dcfce7); border-color: #bbf7d0; box-shadow: 0 4px 20px rgba(16, 185, 129, 0.1); }
+  .verdict.veto { background: linear-gradient(to bottom right, #fff1f2, #ffe4e6); border-color: #fecdd3; box-shadow: 0 4px 20px rgba(244, 63, 94, 0.1); }
+  .verdict .vlabel { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+  
+  .verdict.approved .vlabel::before { content: "✓"; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: var(--pos); color: white; border-radius: 50%; font-size: 14px; }
+  .verdict.veto .vlabel::before { content: "✕"; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: var(--neg); color: white; border-radius: 50%; font-size: 14px; }
+  
+  .verdict.approved .vlabel { color: var(--pos); }
+  .verdict.veto .vlabel { color: var(--neg); }
+  .verdict .vsub { font-size: 13px; font-weight: 500; color: var(--muted); margin-bottom: 16px; opacity: 0.8; }
+  .verdict ol { padding-left: 20px; font-size: 14px; line-height: 1.6; color: var(--ink); font-weight: 500; }
+  .verdict li { margin-bottom: 8px; padding-left: 4px; }
+  .verdict li::marker { color: var(--muted); font-weight: 700; }
+
+  .history { margin-top: 40px; }
+  .history h2 { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink); margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+  #clearHistory { font-size: 12px; font-weight: 600; color: var(--neg); cursor: pointer; text-transform: none; letter-spacing: 0; padding: 4px 10px; background: var(--neg-soft); border-radius: 6px; transition: var(--transition); }
+  #clearHistory:hover { background: var(--neg); color: white; }
+  
+  .history-item { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin-bottom: 12px; cursor: pointer; transition: var(--transition); box-shadow: var(--shadow-sm); }
+  .history-item:hover { border-color: var(--brand-soft); box-shadow: var(--shadow); transform: translateX(2px); }
+  .hi-top { display: flex; justify-content: space-between; font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
+  .hi-meta { font-size: 13px; font-weight: 500; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+  
+  .pill { font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 99px; letter-spacing: 0.02em; }
+  .pill.approved { background: var(--pos-soft); color: var(--pos); }
+  .pill.veto { background: var(--neg-soft); color: var(--neg); }
+  
+  .empty { color: var(--muted); font-size: 14px; font-weight: 500; text-align: center; padding: 32px 0; background: var(--card); border-radius: 12px; border: 1px dashed var(--line); }
 </style>
 </head>
 <body>
@@ -129,7 +237,7 @@
 
   <header>
     <h1>Financial Auditor</h1>
-    <p>Deterministic rules engine · <span id="historyCount">0 analyses</span></p>
+    <p>Deterministic Rules Engine · <span id="historyCount">0</span></p>
   </header>
 
   <div class="card">
@@ -137,18 +245,20 @@
       <label>Item or reason</label>
       <input type="text" id="itemName" placeholder="e.g. 35mm f/1.4 lens · Loan to John">
     </div>
-    <div class="field">
-      <label>Amount ($)</label>
-      <input type="number" id="itemValue" step="0.01" placeholder="530.00">
-    </div>
-    <div class="field">
-      <label>Type of expense</label>
-      <select id="itemCategory">
-        <option value="essencial">Essential (maintenance / health / work)</option>
-        <option value="ferramenta">Tool / productive equipment</option>
-        <option value="lazer">Leisure / aesthetics / convenience</option>
-        <option value="terceiro">Help / loan to a third party</option>
-      </select>
+    <div class="row2" style="display:grid; grid-template-columns: 1fr 2fr; gap: 16px;">
+      <div class="field">
+        <label>Amount ($)</label>
+        <input type="number" id="itemValue" step="0.01" placeholder="530.00">
+      </div>
+      <div class="field">
+        <label>Type of expense</label>
+        <select id="itemCategory">
+          <option value="essencial">Essential (maintenance/health/work)</option>
+          <option value="ferramenta">Tool / productive equipment</option>
+          <option value="lazer">Leisure / aesthetics / convenience</option>
+          <option value="terceiro">Help / loan to a third party</option>
+        </select>
+      </div>
     </div>
   </div>
 
@@ -156,11 +266,11 @@
     <div id="questionsContainer"></div>
   </div>
 
-  <button class="btn" onclick="runAnalysis()">Audit expense</button>
+  <button class="btn" onclick="runAnalysis()">Audit Expense</button>
 
-  <div class="card result" id="resultEl" style="margin-top:16px;"></div>
+  <div class="card result" id="resultEl" style="margin-top:24px;"></div>
 
-  <div class="history" style="margin-top:28px;">
+  <div class="history">
     <h2>History <span id="clearHistory">Clear</span></h2>
     <div id="historyList"><div class="empty">No analysis recorded yet.</div></div>
   </div>
@@ -174,8 +284,6 @@ function saveHistory(a){ localStorage.setItem(STORAGE_KEY, JSON.stringify(a)); }
 function escapeHtml(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
 function jsAttr(s){ return escapeHtml(s).replace(/'/g, '&#39;'); }
 
-// 8 questions. type:'buttons' (categorical) or 'slider' (continuous scale).
-// Sliders: min/max in points, mapped from 0-100 position.
 const QUESTIONS = [
   {id:'q_need', type:'buttons', f:1, text:'Does this solve a real need right now?', opts:[
     {label:'Yes, needed', w:18},{label:'Sort of', w:0},{label:'Can wait', w:-15}
@@ -205,6 +313,7 @@ const QUESTIONS = [
   {id:'q_budget', type:'slider', f:3, text:'Does it fit your budget this month?',
     min:-20, max:12, minLabel:"Won't cover", maxLabel:'Comfortable'},
 ];
+
 const CATEGORY_BASE = { essencial:42, ferramenta:25, lazer:-5, terceiro:-8 };
 const THRESHOLD = 45;
 const CATEGORY_LABEL = {
@@ -213,6 +322,7 @@ const CATEGORY_LABEL = {
 };
 
 let selections = {};
+
 function renderQuestions(){
   selections = {};
   document.getElementById('questionsContainer').innerHTML = QUESTIONS.map(q => {
@@ -234,9 +344,10 @@ function renderQuestions(){
       ).join('') + '</div></div>';
   }).join('');
 }
+
 function pickSlider(qid){
   const el = document.querySelector(`.slider[data-q="${qid}"]`);
-  const step = parseInt(el.value,10); // 0..4
+  const step = parseInt(el.value,10); 
   const min = parseFloat(el.dataset.min), max = parseFloat(el.dataset.max);
   const w = Math.round(min + (max-min)*(step/4));
   const text = el.dataset.text;
@@ -246,6 +357,7 @@ function pickSlider(qid){
   valEl.className = 'slider-val ' + (w>0?'pos':(w<0?'neg':'zero'));
   selections[qid] = {w, label:`${text}::${w>0?'favorable':(w<0?'unfavorable':'neutral')}`, f};
 }
+
 function pick(qid, i, w, label, f){
   document.querySelectorAll(`.opt[data-q="${qid}"]`).forEach(el => el.classList.remove('sel','sel-neg'));
   document.querySelector(`.opt[data-q="${qid}"][data-i="${i}"]`).classList.add(w < 0 ? 'sel-neg' : 'sel');
@@ -263,15 +375,24 @@ function renderHistory(){
     const short = cls==='approved'?'APPROVED':'VETO';
     return `<div class="history-item" onclick="showHistoryItem(${realIdx})">
       <div class="hi-top"><span>${escapeHtml(h.item)}</span><span>$${escapeHtml(h.value)}</span></div>
-      <div class="hi-meta"><span class="pill ${cls}">${short}</span> score ${h.score} · ${h.date}</div></div>`;
+      <div class="hi-meta"><span class="pill ${cls}">${short}</span> <span>Score ${h.score}</span> <span>·</span> <span>${h.date}</span></div></div>`;
   }).join('');
 }
+
 function showHistoryItem(idx){
   const h = loadHistory()[idx]; if(!h) return;
   const r = document.getElementById('resultEl');
-  r.innerHTML = h.html; r.classList.add('active');
-  window.scrollTo({top:r.offsetTop-20, behavior:'smooth'});
+  r.innerHTML = h.html; 
+  r.classList.remove('active');
+  void r.offsetWidth; 
+  r.classList.add('active');
+  setTimeout(() => {
+    const fill = r.querySelector('.score-bar-fill');
+    if(fill) fill.style.width = Math.max(0, Math.min(100, h.score)) + '%';
+  }, 50);
+  window.scrollTo({top:r.offsetTop-24, behavior:'smooth'});
 }
+
 document.getElementById('clearHistory').addEventListener('click', ()=>{
   if(confirm('Clear all history?')){ saveHistory([]); renderHistory(); }
 });
@@ -284,9 +405,6 @@ function runAnalysis(){
   const value = parseFloat(document.getElementById('itemValue').value) || 0;
   const cat = document.getElementById('itemCategory').value;
 
-  // Low-ticket dampener: small expenses carry negligible financial risk,
-  // so penalties (urgency, impulse, etc.) count less. Without this, any
-  // "can wait"/"impulse" answer tanks the score the same for $20 or $2,000.
   let ticketDampen = 1;
   let ticketBonus = 0;
   if(value > 0){
@@ -294,7 +412,6 @@ function runAnalysis(){
     else if(value <= 50){ ticketDampen = 0.3; ticketBonus = 12; }
     else if(value <= 150){ ticketDampen = 0.55; ticketBonus = 6; }
     else if(value <= 400){ ticketDampen = 0.8; ticketBonus = 0; }
-    // above 400: no dampening, full weight
   }
 
   let score = CATEGORY_BASE[cat] + ticketBonus;
@@ -319,7 +436,6 @@ function runAnalysis(){
 
   [1,2,3].forEach(f => { if(byFilter[f].length===0) byFilter[f].push({label:'No factor selected — neutral', w:0}); });
 
-  // Context-aware directives: keyed to the specific negative factors flagged.
   const DIRECTIVE_MAP = {
     q_own:    'Use what you already own — this purchase duplicates a working asset.',
     q_motive: 'Wait 48 hours and re-evaluate — impulse fades, real need does not.',
@@ -332,6 +448,7 @@ function runAnalysis(){
     q_longterm:'Weak long-term value — reconsider whether it earns its keep.',
     q_habit:  'No habit payoff — this is consumption, not investment.'
   };
+  
   let directives;
   if(!approved){
     const negs = [1,2,3].flatMap(f => byFilter[f]).filter(x => x.w < 0 && x.qid).sort((a,b) => a.w - b.w);
@@ -355,8 +472,11 @@ function runAnalysis(){
       <div class="rtitle">${escapeHtml(item)} — $${value.toFixed(2)}</div>
       <div class="score-row">
         <div class="score-bar-wrap">
-          <div class="score-bar-bg"><div class="score-bar-fill" style="width:${score}%;background:${barColor}"></div></div>
-          <div class="score-meta">Score ${score}/100 · base ${CATEGORY_BASE[cat]} · threshold ${THRESHOLD}</div>
+          <div class="score-bar-bg"><div class="score-bar-fill" style="width:0;background:${barColor}"></div></div>
+          <div class="score-meta">
+            <span>Score <strong>${score}/100</strong></span>
+            <span>Threshold <strong>${THRESHOLD}</strong></span>
+          </div>
         </div>
       </div>
       ${secHtml(1,'Technical Viability / Asset',byFilter[1])}
@@ -364,18 +484,28 @@ function runAnalysis(){
       ${secHtml(3,'Behavior / Habit',byFilter[3])}
       <div class="verdict ${vClass}">
         <div class="vlabel">${verdict}</div>
-        <div class="vsub">score ${score}/100 · approval threshold ${THRESHOLD}</div>
+        <div class="vsub">Final Score: ${score} / 100</div>
         <ol>${directives.map(d=>`<li>${escapeHtml(d)}</li>`).join('')}</ol>
       </div>
     </div>`;
 
   const r = document.getElementById('resultEl');
-  r.innerHTML = html; r.classList.add('active');
-  window.scrollTo({top:r.offsetTop-20, behavior:'smooth'});
+  r.innerHTML = html;
+  r.classList.remove('active');
+  void r.offsetWidth; 
+  r.classList.add('active');
+  
+  setTimeout(() => {
+    const fill = r.querySelector('.score-bar-fill');
+    if(fill) fill.style.width = score + '%';
+  }, 50);
+
+  window.scrollTo({top:r.offsetTop-24, behavior:'smooth'});
 
   const hist = loadHistory();
   hist.push({item, value:value.toFixed(2), verdict, score, date:new Date().toLocaleDateString('en-US'), html});
-  saveHistory(hist); renderHistory();
+  saveHistory(hist); 
+  renderHistory();
 }
 
 renderQuestions();
