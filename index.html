@@ -231,6 +231,20 @@
   
   .empty { color: var(--muted); font-size: 14px; font-weight: 500; text-align: center; padding: 32px 0; background: var(--card); border-radius: 12px; border: 1px dashed var(--line); }
 
+  .quiz-progress { background: var(--line); height: 6px; border-radius: 99px; overflow: hidden; margin-bottom: 16px; }
+  .quiz-progress-fill { height: 100%; background: linear-gradient(90deg, var(--brand), var(--brand-hover)); border-radius: 99px; transition: width 0.3s cubic-bezier(0.4,0,0.2,1); width: 0; }
+  .quiz-step-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 12px; }
+  .quiz-nav { margin-top: 20px; display: flex; justify-content: flex-start; }
+  .btn-ghost { background: transparent; border: 1.5px solid var(--line); color: var(--muted); font-family: var(--sans); font-weight: 600; font-size: 14px; padding: 10px 20px; border-radius: 10px; cursor: pointer; transition: var(--transition); }
+  .btn-ghost:hover { border-color: var(--muted); color: var(--ink); }
+  .btn-ghost:disabled { opacity: 0.35; cursor: not-allowed; }
+  .quiz-q { animation: slideUp 0.35s cubic-bezier(0.16,1,0.3,1); }
+  .quiz-q .qtext { font-size: 17px; font-weight: 700; margin-bottom: 16px; color: var(--ink); line-height: 1.4; }
+  .quiz-hint { font-size: 13px; color: var(--muted); margin-bottom: 16px; line-height: 1.5; font-style: italic; }
+  .quiz-q .opts { flex-direction: column; }
+  .quiz-q .opt { min-width: 100%; text-align: left; padding: 14px 16px; font-size: 15px; }
+  .quiz-q .slider-continue { margin-top: 16px; width: 100%; background: var(--brand); color: #fff; border: none; font-family: var(--sans); font-weight: 700; font-size: 15px; padding: 13px; border-radius: 10px; cursor: pointer; }
+
   .tips-banner { margin-top: 16px; background: #fef9f0; border: 1px solid #f5e6c8; border-radius: 14px; padding: 16px 18px; }
   .tips-heading { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #b8860b; margin-bottom: 10px; }
   .tip-line { font-size: 13.5px; line-height: 1.55; color: var(--ink); margin-bottom: 8px; }
@@ -268,11 +282,16 @@
     </div>
   </div>
 
-  <div class="card" id="questionsCard">
-    <div id="questionsContainer"></div>
+  <div class="card" id="quizCard" style="display:none;">
+    <div class="quiz-progress"><div class="quiz-progress-fill" id="quizFill"></div></div>
+    <div class="quiz-step-label" id="quizStepLabel"></div>
+    <div id="quizQuestion"></div>
+    <div class="quiz-nav">
+      <button class="btn-ghost" id="quizBack" onclick="quizBack()">Back</button>
+    </div>
   </div>
 
-  <button class="btn" onclick="runAnalysis()">Audit Expense</button>
+  <button class="btn" id="startBtn" onclick="startQuiz()">Start Audit</button>
 
   <div class="card result" id="resultEl" style="margin-top:24px;"></div>
 
@@ -329,26 +348,112 @@ const CATEGORY_LABEL = {
 
 let selections = {};
 
-function renderQuestions(){
+// Reflection hints shown per question to force deliberate thinking before answering.
+const HINTS = {
+  q_need:   'Pause. If you did not buy this today, what would actually break or stop working?',
+  q_own:    'Open your drawer mentally. List what you already own that overlaps with this.',
+  q_alt:    'Name one cheaper way to solve the same problem. If you can, why not use it?',
+  q_use:    'Count the realistic uses in the next 30 days. Not the ideal ones — the realistic ones.',
+  q_price:  'Have you actually compared prices, or does it just feel acceptable?',
+  q_return: 'Imagine this money is gone forever. Does the decision still feel right?',
+  q_longterm:'Picture yourself with this item one year from now. Still using it?',
+  q_habit:  'Does this build something — a skill, your health, your work — or just fill a moment?',
+  q_motive: 'What happened right before you wanted this? An ad? Stress? Boredom? A real problem?',
+  q_budget: 'What else competes for this money this month? Name it before answering.'
+};
+
+let quizStep = -1;
+
+function startQuiz(){
+  const item = document.getElementById('itemName').value.trim();
+  const value = parseFloat(document.getElementById('itemValue').value);
+  if(!item || isNaN(value)){
+    alert('Fill in the item and amount first.');
+    return;
+  }
   selections = {};
-  document.getElementById('questionsContainer').innerHTML = QUESTIONS.map(q => {
-    if(q.type === 'slider'){
-      return `<div class="q"><div class="qtext">${escapeHtml(q.text)}</div>
-        <div class="slider-wrap">
-          <div class="slider-tick"></div>
-          <input type="range" class="slider" min="0" max="4" value="2" step="1"
-            data-q="${q.id}" data-min="${q.min}" data-max="${q.max}" data-f="${q.f}"
-            data-text="${escapeHtml(q.text)}"
-            oninput="pickSlider('${q.id}')">
-        </div>
-        <div class="slider-labels"><span>${escapeHtml(q.minLabel)}</span><span class="slider-val" id="sv_${q.id}">—</span><span>${escapeHtml(q.maxLabel)}</span></div>
-      </div>`;
-    }
-    return `<div class="q"><div class="qtext">${escapeHtml(q.text)}</div><div class="opts">` +
+  quizStep = 0;
+  document.getElementById('startBtn').style.display = 'none';
+  document.getElementById('resultEl').classList.remove('active');
+  document.getElementById('quizCard').style.display = 'block';
+  renderQuizStep();
+}
+
+function renderQuizStep(){
+  const total = QUESTIONS.length;
+  document.getElementById('quizFill').style.width = ((quizStep) / total * 100) + '%';
+  document.getElementById('quizStepLabel').textContent = 'Question ' + (quizStep+1) + ' of ' + total;
+  document.getElementById('quizBack').disabled = quizStep === 0;
+
+  const q = QUESTIONS[quizStep];
+  let inner;
+  if(q.type === 'slider'){
+    const prev = selections[q.id];
+    const prevStep = prev && prev.step !== undefined ? prev.step : 2;
+    inner = `<div class="quiz-q">
+      <div class="qtext">${escapeHtml(q.text)}</div>
+      <div class="quiz-hint">${escapeHtml(HINTS[q.id]||'')}</div>
+      <div class="slider-wrap">
+        <div class="slider-tick"></div>
+        <input type="range" class="slider" min="0" max="4" value="${prevStep}" step="1"
+          data-q="${q.id}" data-min="${q.min}" data-max="${q.max}" data-f="${q.f}"
+          data-text="${escapeHtml(q.text)}"
+          oninput="pickSlider('${q.id}')">
+      </div>
+      <div class="slider-labels"><span>${escapeHtml(q.minLabel)}</span><span class="slider-val" id="sv_${q.id}">—</span><span>${escapeHtml(q.maxLabel)}</span></div>
+      <button class="slider-continue" onclick="quizNext()">Continue</button>
+    </div>`;
+  } else {
+    inner = `<div class="quiz-q">
+      <div class="qtext">${escapeHtml(q.text)}</div>
+      <div class="quiz-hint">${escapeHtml(HINTS[q.id]||'')}</div>
+      <div class="opts">` +
       q.opts.map((o,i) =>
-        `<div class="opt" data-q="${q.id}" data-i="${i}" onclick="pick('${q.id}',${i},${o.w},'${jsAttr(q.text)}::${jsAttr(o.label)}',${q.f})">${escapeHtml(o.label)}</div>`
-      ).join('') + '</div></div>';
-  }).join('');
+        `<div class="opt${selClass(q.id,i)}" data-q="${q.id}" data-i="${i}" onclick="pickQuiz('${q.id}',${i},${o.w},'${jsAttr(q.text)}::${jsAttr(o.label)}',${q.f})">${escapeHtml(o.label)}</div>`
+      ).join('') + `</div>
+    </div>`;
+  }
+  document.getElementById('quizQuestion').innerHTML = inner;
+  if(q.type === 'slider') pickSlider(q.id);
+}
+
+function selClass(qid, i){
+  const s = selections[qid];
+  if(!s || s.optIndex !== i) return '';
+  return s.w < 0 ? ' sel-neg' : ' sel';
+}
+
+function pickQuiz(qid, i, w, label, f){
+  selections[qid] = {w, label, f, optIndex: i};
+  document.querySelectorAll(`.opt[data-q="${qid}"]`).forEach(el => el.classList.remove('sel','sel-neg'));
+  const el = document.querySelector(`.opt[data-q="${qid}"][data-i="${i}"]`);
+  el.classList.add(w < 0 ? 'sel-neg' : 'sel');
+  setTimeout(quizNext, 280);
+}
+
+function quizNext(){
+  const q = QUESTIONS[quizStep];
+  if(q.type === 'slider'){
+    const el = document.querySelector(`.slider[data-q="${q.id}"]`);
+    if(el && selections[q.id]) selections[q.id].step = parseInt(el.value,10);
+  }
+  if(quizStep < QUESTIONS.length - 1){
+    quizStep++;
+    renderQuizStep();
+  } else {
+    document.getElementById('quizCard').style.display = 'none';
+    document.getElementById('startBtn').style.display = 'block';
+    document.getElementById('startBtn').textContent = 'Audit Again';
+    quizStep = -1;
+    runAnalysis();
+  }
+}
+
+function quizBack(){
+  if(quizStep > 0){
+    quizStep--;
+    renderQuizStep();
+  }
 }
 
 function pickSlider(qid){
@@ -558,8 +663,6 @@ function runAnalysis(){
   renderHistory();
 }
 
-renderQuestions();
-document.querySelectorAll('.slider').forEach(el => pickSlider(el.dataset.q));
 renderHistory();
 </script>
 </body>
