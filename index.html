@@ -371,13 +371,13 @@ const HINTS = {
   q_own:    'List what you already own that could do this. Be precise about what it cannot do.',
   q_pattern:'Recent purchases sitting unused are the strongest predictor of this one joining them.',
   q_alt:    'Name one cheaper way to solve the same problem. If you can, why not use it?',
-  q_use:    'Count the realistic uses in the next 30 days. Not the ideal ones — the realistic ones.',
+  q_use:    'Count the realistic uses in the next 30 days. Not the ideal ones. The realistic ones.',
   q_price:  'Have you actually compared prices, or does it just feel acceptable?',
   q_return: 'Imagine this money is gone forever. Does the decision still feel right?',
   q_longterm:'Picture yourself with this item one year from now. Still using it?',
   q_trigger:'Ads and algorithms are engineered to create wants you did not have five minutes ago.',
   q_emotion:'Boredom, stress, and excitement all push the brain toward buying for the dopamine, not the item.',
-  q_habit:  'Does this build something — a skill, your health, your work — or just fill a moment?',
+  q_habit:  'Does this build something (a skill, your health, your work) or just fill a moment?',
   q_motive: 'What happened right before you wanted this? An ad? Stress? Boredom? A real problem?',
   q_budget: 'What else competes for this money this month? Name it before answering.'
 };
@@ -420,7 +420,7 @@ function renderQuizStep(){
           data-text="${jsAttr(q.text)}"
           oninput="pickSlider('${q.id}')">
       </div>
-      <div class="slider-labels"><span>${escapeHtml(q.minLabel)}</span><span class="slider-val" id="sv_${q.id}">—</span><span>${escapeHtml(q.maxLabel)}</span></div>
+      <div class="slider-labels"><span>${escapeHtml(q.minLabel)}</span><span class="slider-val" id="sv_${q.id}">·</span><span>${escapeHtml(q.maxLabel)}</span></div>
       <button class="slider-continue" onclick="quizNext()">Continue</button>
     </div>`;
   } else {
@@ -570,7 +570,7 @@ function runAnalysis(){
     byFilter[s.f].push({label:`${q}: ${a}`, w, qid});
   });
   if(ticketBonus > 0){
-    byFilter[2].push({label:`Low ticket ($${value.toFixed(2)}) — negligible financial risk`, w:ticketBonus});
+    byFilter[2].push({label:`Low ticket ($${value.toFixed(2)}): negligible financial risk`, w:ticketBonus});
   }
 
   score = Math.max(0, Math.min(100, score));
@@ -579,22 +579,22 @@ function runAnalysis(){
   const vClass = approved ? 'approved' : 'veto';
   const barColor = approved ? 'var(--pos)' : 'var(--neg)';
 
-  [1,2,3].forEach(f => { if(byFilter[f].length===0) byFilter[f].push({label:'No factor selected — neutral', w:0}); });
+  [1,2,3].forEach(f => { if(byFilter[f].length===0) byFilter[f].push({label:'No factor selected, neutral', w:0}); });
 
   const DIRECTIVE_MAP = {
-    q_own:    'Use what you already own — this purchase duplicates a working asset.',
-    q_pattern:'Stop the acquisition cycle — use or sell the unused items first.',
-    q_motive: 'Wait 48 hours and re-evaluate — impulse fades, real need does not.',
-    q_need:   'Postpone — revisit when it becomes an actual need.',
+    q_own:    'Use what you already own. This purchase duplicates a working asset.',
+    q_pattern:'Stop the acquisition cycle. Use or sell the unused items first.',
+    q_motive: 'Wait 48 hours and re-evaluate. Impulse fades, real need does not.',
+    q_need:   'Postpone. Revisit when it becomes an actual need.',
     q_alt:    'Check the cheaper alternative first before committing.',
-    q_budget: 'This strains your month — delay until cash flow recovers.',
+    q_budget: 'This strains your month. Delay until cash flow recovers.',
     q_price:  'Search for a better price before buying.',
-    q_use:    'Low expected use — the cost-per-use does not justify it.',
-    q_return: 'Treat this money as gone — only proceed if you accept the loss.',
-    q_longterm:'Weak long-term value — reconsider whether it earns its keep.',
-    q_habit:  'No habit payoff — this is consumption, not investment.',
-    q_trigger:'This want was manufactured by an ad or feed — unfollow, mute, or block the source.',
-    q_emotion:'Address the feeling directly — a walk, a call, a break — not the purchase.'
+    q_use:    'Low expected use. The cost-per-use does not justify it.',
+    q_return: 'Treat this money as gone. Only proceed if you accept the loss.',
+    q_longterm:'Weak long-term value. Reconsider whether it earns its keep.',
+    q_habit:  'No habit payoff. This is consumption, not investment.',
+    q_trigger:'This want was manufactured by an ad or feed. Unfollow, mute, or block the source.',
+    q_emotion:'Address the feeling directly (a walk, a call, a break), not the purchase.'
   };
   
   let directives;
@@ -628,11 +628,11 @@ function runAnalysis(){
     { test: () => q_motive_ans === 'Felt urgent, had to act fast',
       tip: '⏸️ <strong>Impulse detector:</strong> Strong emotions can trigger spending. Try a 10-minute pause – walk, drink water, or breathe – before clicking "buy".' },
     { test: () => q_pattern_ans === 'Several',
-      tip: '🔂 <strong>Acquisition loop:</strong> The buying high fades on arrival — that is why the last purchases sit unused. The next one will too. Break the loop, not the bank.' },
+      tip: '🔂 <strong>Acquisition loop:</strong> The buying high fades on arrival. That is why the last purchases sit unused. The next one will too. Break the loop, not the bank.' },
     { test: () => q_trigger_ans === 'Ad or algorithm' || q_trigger_ans === 'Social media / someone else has it',
-      tip: '🎯 <strong>Engineered want:</strong> You didn\u2019t find this item — it found you. Algorithms create desires on demand. Mute the source and see if the want survives a week.' },
+      tip: '🎯 <strong>Engineered want:</strong> You didn\u2019t find this item. It found you. Algorithms create desires on demand. Mute the source and see if the want survives a week.' },
     { test: () => q_emotion_ans === 'Bored, stressed, or anxious',
-      tip: '🧘 <strong>Feeling, not filling:</strong> Boredom and stress push the brain to buy for the dopamine hit, not the item. Name the feeling and address it directly — the cart can wait.' },
+      tip: '🧘 <strong>Feeling, not filling:</strong> Boredom and stress push the brain to buy for the dopamine hit, not the item. Name the feeling and address it directly. The cart can wait.' },
     { test: () => cat === 'lazer' && score < 45,
       tip: '📦 <strong>30-day rule:</strong> For non-essential treats, write it down and wait 30 days. Chances are, the urge will pass.' },
     { test: () => q_motive_ans === 'Decided just now, no plan' && score < 60,
@@ -670,7 +670,7 @@ function runAnalysis(){
   const html = `
     <div class="result active">
       <div class="rhead">${escapeHtml(CATEGORY_LABEL[cat])}</div>
-      <div class="rtitle">${escapeHtml(item)} — $${value.toFixed(2)}</div>
+      <div class="rtitle">${escapeHtml(item)}: $${value.toFixed(2)}</div>
       <div class="score-row">
         <div class="score-bar-wrap">
           <div class="score-bar-bg"><div class="score-bar-fill" style="width:0;background:${barColor}"></div></div>
