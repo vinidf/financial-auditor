@@ -331,7 +331,7 @@ const QUESTIONS = [
     {label:'Fair / reasonable', w:12},{label:'Acceptable', w:4},{label:'Too high', w:-12}
   ]},
   {id:'q_return', type:'slider', f:2, text:'Will you get this money back?',
-    min:-18, max:14, minLabel:"Won't recover", maxLabel:'Full recovery'},
+    min:-16, max:16, minLabel:"Won't recover", maxLabel:'Full recovery'},
   {id:'q_longterm', type:'buttons', f:2, text:'Is it worth it long-term?', opts:[
     {label:'Yes, clearly', w:14},{label:'Somewhat', w:0},{label:"Not worth it", w:-14}
   ]},
@@ -347,11 +347,11 @@ const QUESTIONS = [
   {id:'q_habit', type:'buttons', f:3, text:'Does this support a productive habit (health, work, skill)?', opts:[
     {label:'Yes, directly', w:14},{label:'Indirectly', w:4},{label:'No', w:-6}
   ]},
-  {id:'q_motive', type:'buttons', f:3, text:'What is motivating this purchase?', opts:[
-    {label:'Thought it through', w:12},{label:'Wanted / liked it', w:-8},{label:'Impulse or pressure', w:-20}
+  {id:'q_motive', type:'buttons', f:3, text:'Which best describes your decision process?', opts:[
+    {label:'Planned in advance', w:12},{label:'Decided just now, no plan', w:-8},{label:'Felt urgent, had to act fast', w:-20}
   ]},
   {id:'q_budget', type:'slider', f:3, text:'Does it fit your budget this month?',
-    min:-20, max:12, minLabel:"Won't cover", maxLabel:'Comfortable'},
+    min:-16, max:16, minLabel:"Won't cover", maxLabel:'Comfortable'},
 ];
 
 const CATEGORY_BASE = { essencial:42, ferramenta:25, lazer:-5, terceiro:-8 };
@@ -626,7 +626,7 @@ function runAnalysis(){
   const q_return_raw = selections.q_return ? selections.q_return.w : null;
 
   const TIP_RULES = [
-    { test: () => q_motive_ans === 'Impulse or pressure',
+    { test: () => q_motive_ans === 'Felt urgent, had to act fast',
       tip: '⏸️ <strong>Impulse detector:</strong> Strong emotions can trigger spending. Try a 10-minute pause – walk, drink water, or breathe – before clicking "buy".' },
     { test: () => q_pattern_ans === 'Several',
       tip: '🔂 <strong>Acquisition loop:</strong> The buying high fades on arrival — that is why the last purchases sit unused. The next one will too. Break the loop, not the bank.' },
@@ -638,7 +638,7 @@ function runAnalysis(){
       tip: '🧘 <strong>Feeling, not filling:</strong> Boredom and stress push the brain to buy for the dopamine hit, not the item. Name the feeling and address it directly — the cart can wait.' },
     { test: () => cat === 'lazer' && score < 45,
       tip: '📦 <strong>30-day rule:</strong> For non-essential treats, write it down and wait 30 days. Chances are, the urge will pass.' },
-    { test: () => q_motive_ans === 'Wanted / liked it' && score < 60,
+    { test: () => q_motive_ans === 'Decided just now, no plan' && score < 60,
       tip: '🧠 <strong>Dopamine reality check:</strong> Our brain confuses wanting with liking. Visualize owning the item a month from now – will it still matter?' },
     { test: () => q_budget_raw !== null && q_budget_raw < -5,
       tip: '💰 <strong>Pay yourself first:</strong> If this purchase means sacrificing a bill or savings goal, picture the stress tomorrow. Wait until the next paycheck.' },
