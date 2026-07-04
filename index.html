@@ -267,12 +267,12 @@
   <div class="card">
     <div class="field">
       <label>Item or reason</label>
-      <input type="text" id="itemName" placeholder="e.g. 35mm f/1.4 lens · Loan to John">
+      <input type="text" id="itemName" placeholder="e.g. 35mm f/1.4 lens · Loan to John" onfocus="this.dataset.ph=this.placeholder;this.placeholder=''" onblur="this.placeholder=this.dataset.ph||''">
     </div>
     <div class="row2" style="display:grid; grid-template-columns: 1fr 2fr; gap: 16px;">
       <div class="field">
         <label>Amount ($)</label>
-        <input type="number" id="itemValue" step="0.01" placeholder="530.00">
+        <input type="number" id="itemValue" step="0.01" placeholder="530.00" onfocus="this.dataset.ph=this.placeholder;this.placeholder=''" onblur="this.placeholder=this.dataset.ph||''">
       </div>
       <div class="field">
         <label>Type of expense</label>
@@ -411,13 +411,13 @@ function renderQuizStep(){
   let inner;
   if(q.type === 'slider'){
     const prev = selections[q.id];
-    const prevStep = prev && prev.step !== undefined ? prev.step : 2;
+    const prevStep = prev && prev.step !== undefined ? prev.step : 3;
     inner = `<div class="quiz-q">
       <div class="qtext">${escapeHtml(q.text)}</div>
       <div class="quiz-hint">${escapeHtml(HINTS[q.id]||'')}</div>
       <div class="slider-wrap">
         <div class="slider-tick"></div>
-        <input type="range" class="slider" min="0" max="4" value="${prevStep}" step="1"
+        <input type="range" class="slider" min="0" max="6" value="${prevStep}" step="1"
           data-q="${q.id}" data-min="${q.min}" data-max="${q.max}" data-f="${q.f}"
           data-text="${jsAttr(q.text)}"
           oninput="pickSlider('${q.id}')">
@@ -482,7 +482,7 @@ function pickSlider(qid){
   const el = document.querySelector(`.slider[data-q="${qid}"]`);
   const step = parseInt(el.value,10); 
   const min = parseFloat(el.dataset.min), max = parseFloat(el.dataset.max);
-  const w = Math.round(min + (max-min)*(step/4));
+  const w = Math.round(min + (max-min)*(step/6));
   const text = el.dataset.text;
   const f = parseInt(el.dataset.f,10);
   const valEl = document.getElementById('sv_'+qid);
