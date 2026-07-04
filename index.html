@@ -319,18 +319,18 @@ const QUESTIONS = [
   ]},
   {id:'q_own', type:'buttons', f:1, noDampen:true, text:'Does this purchase unlock a meaningful new capability you don\u2019t currently have?', opts:[
     {label:'Yes, it does something my current gear/tools cannot do at all', w:10},
-    {label:'It\u2019s a significant improvement on something I can technically do, but with real limitations', w:-4},
-    {label:'It\u2019s a minor refinement of something I can already do well enough', w:-14},
-    {label:'No, it overlaps almost completely with what I already own', w:-24}
+    {label:'It\u2019s a significant improvement on something I can technically do, but with real limitations', w:2},
+    {label:'It\u2019s a minor refinement of something I can already do well enough', w:-12},
+    {label:'No, it overlaps almost completely with what I already own', w:-22}
   ]},
   {id:'q_pattern', type:'buttons', f:1, noDampen:true, text:'Have you bought similar items recently that are still unused or underused?', opts:[
-    {label:'None', w:8},{label:'One', w:-10},{label:'Several', w:-22}
+    {label:'None', w:8},{label:'One', w:-6},{label:'Several', w:-20}
   ]},
   {id:'q_alt', type:'buttons', f:1, text:'Could you solve this same problem for less money?', opts:[
     {label:'No, I\u2019ve compared and this is the best value', w:14},
-    {label:'Possibly, but the cheaper option has real downsides', w:4},
-    {label:'I haven\u2019t seriously looked', w:-6},
-    {label:'Yes, there\u2019s a viable cheaper way I\u2019m ignoring', w:-18}
+    {label:'Possibly, but the cheaper option has real downsides', w:8},
+    {label:'I haven\u2019t seriously looked', w:-4},
+    {label:'Yes, there\u2019s a viable cheaper way I\u2019m ignoring', w:-16}
   ]},
   {id:'q_use', type:'slider', f:2, text:'Will this get good use / return?',
     min:-15, max:15, minLabel:'Little use', maxLabel:'Very useful'},
@@ -343,10 +343,10 @@ const QUESTIONS = [
     {label:'Yes, clearly', w:14},{label:'Somewhat', w:0},{label:"Not worth it", w:-14}
   ]},
   {id:'q_trigger', type:'buttons', f:3, text:'How did this item enter your radar?', opts:[
-    {label:'I searched for it', w:10},{label:'Ad or algorithm', w:-10},{label:'Social media / someone else has it', w:-14}
+    {label:'I searched for it', w:10},{label:'Ad or algorithm', w:-4},{label:'Social media / someone else has it', w:-12}
   ]},
   {id:'q_emotion', type:'buttons', f:3, text:'What is your emotional state right now?', opts:[
-    {label:'Calm and neutral', w:8},{label:'Bored, stressed, or anxious', w:-12},{label:'Excited / euphoric', w:-10}
+    {label:'Calm and neutral', w:8},{label:'Bored, stressed, or anxious', w:-8},{label:'Excited / euphoric', w:-6}
   ]},
   {id:'q_habit', type:'buttons', f:3, text:'Does this support a productive habit (health, work, skill)?', opts:[
     {label:'Yes, directly', w:14},{label:'Indirectly', w:4},{label:'No', w:-6}
@@ -358,8 +358,8 @@ const QUESTIONS = [
     min:-16, max:16, minLabel:"Won't cover", maxLabel:'Comfortable'},
 ];
 
-const CATEGORY_BASE = { essencial:42, ferramenta:25, lazer:-5, terceiro:-8 };
-const THRESHOLD = 45;
+const CATEGORY_BASE = { essencial:48, ferramenta:32, lazer:8, terceiro:5 };
+const THRESHOLD = 40;
 const CATEGORY_LABEL = {
   essencial:'Essential', ferramenta:'Tool / Productive Equipment',
   lazer:'Leisure / Aesthetics / Convenience', terceiro:'Help / Loan to Third Party'
