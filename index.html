@@ -322,8 +322,11 @@ const QUESTIONS = [
   {id:'q_pattern', type:'buttons', f:1, noDampen:true, text:'Have you bought similar items recently that are still unused or underused?', opts:[
     {label:'None', w:8},{label:'One', w:-10},{label:'Several', w:-22}
   ]},
-  {id:'q_alt', type:'buttons', f:1, text:'Have you found a cheaper option that meets the same need?', opts:[
-    {label:'Checked, none found', w:15},{label:"Haven't checked", w:0},{label:'Yes, found one', w:-18}
+  {id:'q_alt', type:'buttons', f:1, text:'Could you solve this same problem for less money?', opts:[
+    {label:'No, I\u2019ve compared and this is the best value', w:14},
+    {label:'Possibly, but the cheaper option has real downsides', w:4},
+    {label:'I haven\u2019t seriously looked', w:-6},
+    {label:'Yes, there\u2019s a viable cheaper way I\u2019m ignoring', w:-18}
   ]},
   {id:'q_use', type:'slider', f:2, text:'Will this get good use / return?',
     min:-15, max:15, minLabel:'Little use', maxLabel:'Very useful'},
