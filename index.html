@@ -318,9 +318,8 @@ const QUESTIONS = [
     {label:'Yes, needed', w:18},{label:'Sort of', w:0},{label:'Can wait', w:-15}
   ]},
   {id:'q_own', type:'buttons', f:1, noDampen:true, text:'Does this purchase unlock a meaningful new capability you don\u2019t currently have?', opts:[
-    {label:'Yes, it does something my current gear/tools cannot do at all', w:10},
-    {label:'It\u2019s a significant improvement on something I can technically do, but with real limitations', w:2},
-    {label:'It\u2019s a minor refinement of something I can already do well enough', w:-12},
+    {label:'Yes, my current gear/tools cannot do this at all', w:10},
+    {label:'Somewhat \u2014 real limitations exist in what I have', w:0},
     {label:'No, it overlaps almost completely with what I already own', w:-22}
   ]},
   {id:'q_pattern', type:'buttons', f:1, noDampen:true, text:'Have you bought similar items recently that are still unused or underused?', opts:[
@@ -328,8 +327,7 @@ const QUESTIONS = [
   ]},
   {id:'q_alt', type:'buttons', f:1, text:'Could you solve this same problem for less money?', opts:[
     {label:'No, I\u2019ve compared and this is the best value', w:14},
-    {label:'Possibly, but the cheaper option has real downsides', w:8},
-    {label:'I haven\u2019t seriously looked', w:-4},
+    {label:'Haven\u2019t seriously checked', w:-2},
     {label:'Yes, there\u2019s a viable cheaper way I\u2019m ignoring', w:-16}
   ]},
   {id:'q_use', type:'slider', f:2, text:'Will this get good use / return?',
@@ -358,7 +356,7 @@ const QUESTIONS = [
     min:-16, max:16, minLabel:"Won't cover", maxLabel:'Comfortable'},
 ];
 
-const CATEGORY_BASE = { essencial:48, ferramenta:32, lazer:8, terceiro:5 };
+const CATEGORY_BASE = { essencial:54, ferramenta:40, lazer:14, terceiro:11 };
 const THRESHOLD = 40;
 const CATEGORY_LABEL = {
   essencial:'Essential', ferramenta:'Tool / Productive Equipment',
