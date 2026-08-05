@@ -543,6 +543,21 @@ function showHistoryItem(idx){
     const fill = r.querySelector('.score-bar-fill');
     if(fill) fill.style.width = Math.max(0, Math.min(100, h.score)) + '%';
   }, 50);
+
+  // Inject "Audit Again" button at the bottom of the result card
+  const btn = document.createElement('button');
+  btn.className = 'btn';
+  btn.style.marginTop = '16px';
+  btn.textContent = 'Audit Again';
+  btn.onclick = () => {
+    document.getElementById('itemName').value = h.item || '';
+    document.getElementById('itemValue').value = h.value || '';
+    r.classList.remove('active');
+    window.scrollTo({top:0, behavior:'smooth'});
+    setTimeout(startQuiz, 300);
+  };
+  r.appendChild(btn);
+
   window.scrollTo({top:r.offsetTop-24, behavior:'smooth'});
 }
 
