@@ -606,16 +606,13 @@ function runAnalysis(){
     <div class="verdict ${verdictClass}">
       <div class="vlabel">${verdict}</div>
       <div class="vsub">Final score: ${score}/100</div>
-      <div class="quarantine">
-        Recommended quarantine
-        <strong>${quarantine}</strong>
-      </div>
       <ol>${directives.map(item=>`<li>${escapeHtml(item)}</li>`).join('')}</ol>
     </div>
     <div class="tips">
-      <h4>Quarantine scale</h4>
-      <p>Up to R$50: 2 hours · R$50.01–100: 6 hours · R$100.01–150: 1 day · R$150.01–200: 2 days.</p>
-      <p>R$200.01–300: 3 days · R$300.01–400: 5 days · R$400.01–500: 7 days · R$500.01–700: 10 days · R$700.01–999.99: 15 days · R$1,000+: 30 days.</p>
+      <h4>💡 Smart Tips</h4>
+      <p>⏳ <strong>Purchase quarantine:</strong> Wait ${quarantine} before buying. If it still feels worthwhile afterward, reassess it calmly.</p>
+      ${negatives[0] ? `<p>🧭 <strong>Main reflection:</strong> ${escapeHtml(negatives[0].q.hint)}</p>` : ''}
+      <p>💳 <strong>Friction is your friend:</strong> Remove saved cards from apps and browsers. A little extra effort can interrupt an impulse purchase.</p>
     </div>`;
 
   const result=document.getElementById('resultEl');
