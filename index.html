@@ -314,7 +314,7 @@ function escapeHtml(s){ const d=document.createElement('div'); d.textContent=s; 
 function jsAttr(s){ return escapeHtml(s).replace(/'/g, '&#39;').replace(/"/g, '&quot;'); }
 
 const QUESTIONS = [
-  {id:'q_need', type:'buttons', f:1, text:'Does this solve a real need right now?', opts:[
+  {id:'q_need', type:'buttons', f:1, noDampen:true, text:'Does this solve a real need right now?', opts:[
     {label:'Yes, needed', w:18},{label:'Sort of', w:0},{label:'Can wait', w:-15}
   ]},
   {id:'q_own', type:'buttons', f:1, noDampen:true, text:'Does this purchase unlock a meaningful new capability you don\u2019t currently have?', opts:[
@@ -325,7 +325,7 @@ const QUESTIONS = [
   {id:'q_pattern', type:'buttons', f:1, noDampen:true, text:'Have you bought similar items recently that are still unused or underused?', opts:[
     {label:'None', w:8},{label:'One', w:-6},{label:'Several', w:-20}
   ]},
-  {id:'q_alt', type:'buttons', f:1, text:'Could you solve this same problem for less money?', opts:[
+  {id:'q_alt', type:'buttons', f:1, noDampen:true, text:'Could you solve this same problem for less money?', opts:[
     {label:'No, I\u2019ve compared and this is the best value', w:14},
     {label:'Haven\u2019t seriously checked', w:-2},
     {label:'Yes, there\u2019s a viable cheaper way I\u2019m ignoring', w:-16}
