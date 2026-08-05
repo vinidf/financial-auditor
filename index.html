@@ -8,735 +8,673 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #f8fafc;
-    --card: #ffffff;
-    --ink: #0f172a;
-    --muted: #64748b;
-    --line: #e2e8f0;
-    --brand: #4f46e5;
-    --brand-hover: #4338ca;
-    --brand-soft: #e0e7ff;
-    --pos: #10b981;
-    --pos-soft: #d1fae5;
-    --neg: #f43f5e;
-    --neg-soft: #ffe4e6;
-    --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-    --radius: 16px;
-    --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  
-  body {
-    background: var(--bg);
-    color: var(--ink);
-    font-family: var(--sans);
-    min-height: 100vh;
-    padding: 32px 16px 80px;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-  
-  .wrap { max-width: 580px; margin: 0 auto; }
-
-  header { text-align: center; margin-bottom: 32px; }
-  header h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.03em; color: var(--ink); }
-  header p { font-size: 14px; font-weight: 500; color: var(--muted); margin-top: 4px; }
-
-  .card {
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    padding: 24px;
-    box-shadow: var(--shadow-sm);
-    margin-bottom: 24px;
-    transition: var(--transition);
-  }
-  .card:hover { box-shadow: var(--shadow); }
-
-  .field { margin-bottom: 20px; }
-  .field:last-child { margin-bottom: 0; }
-  .field label { display: block; font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.02em; }
-  .field input, .field select {
-    width: 100%;
-    background: var(--bg);
-    border: 1px solid var(--line);
-    color: var(--ink);
-    font-family: var(--sans);
-    font-size: 15px;
-    font-weight: 500;
-    padding: 14px 16px;
-    border-radius: 12px;
-    transition: var(--transition);
-    appearance: none;
-  }
-  .field select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 16px center;
-    background-size: 16px;
-    padding-right: 40px;
-  }
-  .field input:focus, .field select:focus {
-    outline: none;
-    border-color: var(--brand);
-    background: var(--card);
-    box-shadow: 0 0 0 4px var(--brand-soft);
-  }
-  .field input:focus::placeholder { color: transparent; }
-
-  .q { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--line); }
-  .q:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
-  .q .qtext { font-size: 15px; font-weight: 600; margin-bottom: 12px; color: var(--ink); line-height: 1.4; }
-  
-  .opts { display: flex; gap: 8px; flex-wrap: wrap; }
-  .opt {
-    flex: 1;
-    min-width: calc(33.333% - 8px);
-    text-align: center;
-    background: var(--card);
-    border: 1.5px solid var(--line);
-    color: var(--muted);
-    font-family: var(--sans);
-    font-size: 14px;
-    font-weight: 500;
-    padding: 12px 8px;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: var(--transition);
-    user-select: none;
-  }
-  .opt:hover { border-color: var(--muted); color: var(--ink); transform: translateY(-1px); }
-  .opt:active { transform: translateY(0); }
-  
-  .opt.sel { background: var(--pos-soft); color: var(--pos); border-color: var(--pos); font-weight: 600; box-shadow: 0 0 0 2px var(--pos-soft); }
-  .opt.sel-neg { background: var(--neg-soft); color: var(--neg); border-color: var(--neg); font-weight: 600; box-shadow: 0 0 0 2px var(--neg-soft); }
-
-  .slider-wrap { position: relative; padding: 12px 0; height: 32px; box-sizing: content-box; }
-  .slider-tick { position: absolute; left: 50%; top: 12px; bottom: 12px; width: 2px; background: var(--line); transform: translateX(-1px); pointer-events: none; }
-  .slider { -webkit-appearance: none; appearance: none; width: 100%; height: 32px; outline: none; position: relative; z-index: 1; margin: 0; display: block; background: none; }
-  
-  .slider::-webkit-slider-runnable-track {
-    height: 6px; border-radius: 99px;
-    background: var(--line);
-  }
-  .slider::-moz-range-track {
-    height: 6px; border-radius: 99px;
-    background: var(--line);
-  }
-  
-  .slider::-webkit-slider-thumb {
-    -webkit-appearance: none; appearance: none;
-    width: 28px; height: 28px; border-radius: 50%;
-    background: var(--card); cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    border: 3px solid var(--brand);
-    margin-top: -11px;
-    transition: transform 0.1s;
-  }
-  .slider::-webkit-slider-thumb:hover { transform: scale(1.1); }
-  
-  .slider::-moz-range-thumb {
-    width: 24px; height: 24px; border-radius: 50%;
-    background: var(--card); cursor: pointer;
-    border: 3px solid var(--brand);
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    transition: transform 0.1s;
-  }
-  .slider::-moz-range-thumb:hover { transform: scale(1.1); }
-  
-  .slider-labels { display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 500; color: var(--muted); margin-top: 8px; }
-  .slider-val { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; background: var(--bg); padding: 2px 10px; border-radius: 20px; }
-  .slider-val.pos { color: var(--pos); background: var(--pos-soft); }
-  .slider-val.neg { color: var(--neg); background: var(--neg-soft); }
-  .slider-val.zero { color: var(--muted); border: 1px solid var(--line); }
-
-  .btn {
-    width: 100%;
-    background: linear-gradient(135deg, var(--brand), var(--brand-hover));
-    color: #fff;
-    border: none;
-    font-family: var(--sans);
-    font-weight: 700;
-    font-size: 16px;
-    letter-spacing: 0.01em;
-    padding: 16px;
-    border-radius: 12px;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-    transition: var(--transition);
-  }
-  .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4); }
-  .btn:active { transform: translateY(0); box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3); }
-
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .result { display: none; }
-  .result.active { display: block; animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-  
-  .result .rhead { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--brand); margin-bottom: 4px; }
-  .result .rtitle { font-size: 20px; font-weight: 800; margin-bottom: 20px; letter-spacing: -0.02em; color: var(--ink); }
-
-  .score-row { margin-bottom: 24px; padding: 16px; background: var(--bg); border-radius: 12px; border: 1px solid var(--line); }
-  .score-bar-wrap { flex: 1; }
-  .score-bar-bg { background: var(--line); height: 10px; border-radius: 99px; overflow: hidden; margin-bottom: 8px; }
-  .score-bar-fill { height: 100%; border-radius: 99px; transition: width 1s cubic-bezier(0.16, 1, 0.3, 1); width: 0; }
-  .score-meta { font-size: 13px; font-weight: 500; color: var(--muted); display: flex; justify-content: space-between; }
-  .score-meta strong { color: var(--ink); }
-
-  .sec { margin-bottom: 24px; }
-  .sec h3 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 12px; border-bottom: 2px solid var(--line); padding-bottom: 6px; }
-  .factor { display: flex; justify-content: space-between; align-items: baseline; font-size: 14px; padding: 10px 0; border-bottom: 1px solid var(--line); gap: 12px; }
-  .factor:last-child { border-bottom: none; padding-bottom: 0; }
-  .factor .flabel { color: var(--ink); font-weight: 500; line-height: 1.4; }
-  .factor .fval { font-weight: 700; font-variant-numeric: tabular-nums; flex-shrink: 0; padding: 2px 8px; border-radius: 6px; }
-  .fval.pos { background: var(--pos-soft); color: var(--pos); }
-  .fval.neg { background: var(--neg-soft); color: var(--neg); }
-  .fval.zero { background: var(--bg); color: var(--muted); border: 1px solid var(--line); }
-
-  .verdict { border-radius: 16px; padding: 20px; margin-top: 24px; border: 1px solid transparent; }
-  .verdict.approved { background: linear-gradient(to bottom right, #f0fdf4, #dcfce7); border-color: #bbf7d0; box-shadow: 0 4px 20px rgba(16, 185, 129, 0.1); }
-  .verdict.strong { background: linear-gradient(to bottom right, #ecfdf5, #d1fae5); border-color: #6ee7b7; box-shadow: 0 4px 20px rgba(16, 185, 129, 0.2); }
-  .verdict.caution { background: linear-gradient(to bottom right, #fffbeb, #fef3c7); border-color: #fcd34d; box-shadow: 0 4px 20px rgba(245, 158, 11, 0.15); }
-  .verdict.veto { background: linear-gradient(to bottom right, #fff1f2, #ffe4e6); border-color: #fecdd3; box-shadow: 0 4px 20px rgba(244, 63, 94, 0.1); }
-  .verdict .vlabel { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
-  
-  .verdict.approved .vlabel::before { content: "✓"; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: var(--pos); color: white; border-radius: 50%; font-size: 14px; }
-  .verdict.strong .vlabel::before { content: "✓"; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: #059669; color: white; border-radius: 50%; font-size: 14px; }
-  .verdict.caution .vlabel::before { content: "!"; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: #f59e0b; color: white; border-radius: 50%; font-size: 15px; font-weight: 800; }
-  .verdict.veto .vlabel::before { content: "✕"; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: var(--neg); color: white; border-radius: 50%; font-size: 14px; }
-  
-  .verdict.approved .vlabel { color: var(--pos); }
-  .verdict.strong .vlabel { color: #059669; }
-  .verdict.caution .vlabel { color: #d97706; }
-  .verdict.veto .vlabel { color: var(--neg); }
-  .verdict .vsub { font-size: 13px; font-weight: 500; color: var(--muted); margin-bottom: 16px; opacity: 0.8; }
-  .verdict ol { padding-left: 20px; font-size: 14px; line-height: 1.6; color: var(--ink); font-weight: 500; }
-  .verdict li { margin-bottom: 8px; padding-left: 4px; }
-  .verdict li::marker { color: var(--muted); font-weight: 700; }
-
-  .history { margin-top: 40px; }
-  .history h2 { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink); margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
-  #clearHistory { font-size: 12px; font-weight: 600; color: var(--neg); cursor: pointer; text-transform: none; letter-spacing: 0; padding: 4px 10px; background: var(--neg-soft); border-radius: 6px; transition: var(--transition); }
-  #clearHistory:hover { background: var(--neg); color: white; }
-  
-  .history-item { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 0; margin-bottom: 12px; transition: var(--transition); box-shadow: var(--shadow-sm); display: flex; align-items: stretch; overflow: hidden; }
-  .history-item:hover { border-color: var(--brand-soft); box-shadow: var(--shadow); transform: translateX(2px); }
-  .hi-body { flex: 1; padding: 16px; cursor: pointer; min-width: 0; }
-  .hi-delete { display: flex; align-items: center; justify-content: center; width: 44px; flex-shrink: 0; color: var(--muted); font-size: 20px; font-weight: 600; cursor: pointer; border-left: 1px solid var(--line); transition: var(--transition); user-select: none; }
-  .hi-delete:hover { background: var(--neg-soft); color: var(--neg); }
-  .hi-top { display: flex; justify-content: space-between; font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
-  .hi-meta { font-size: 13px; font-weight: 500; color: var(--muted); display: flex; align-items: center; gap: 8px; }
-  
-  .pill { font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 99px; letter-spacing: 0.02em; }
-  .pill.approved { background: var(--pos-soft); color: var(--pos); }
-  .pill.strong { background: #d1fae5; color: #059669; }
-  .pill.caution { background: #fef3c7; color: #d97706; }
-  .pill.veto { background: var(--neg-soft); color: var(--neg); }
-  
-  .empty { color: var(--muted); font-size: 14px; font-weight: 500; text-align: center; padding: 32px 0; background: var(--card); border-radius: 12px; border: 1px dashed var(--line); }
-
-  .quiz-progress { background: var(--line); height: 6px; border-radius: 99px; overflow: hidden; margin-bottom: 16px; }
-  .quiz-progress-fill { height: 100%; background: linear-gradient(90deg, var(--brand), var(--brand-hover)); border-radius: 99px; transition: width 0.3s cubic-bezier(0.4,0,0.2,1); width: 0; }
-  .quiz-step-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 12px; }
-  .quiz-nav { margin-top: 20px; display: flex; justify-content: flex-start; }
-  .btn-ghost { background: transparent; border: 1.5px solid var(--line); color: var(--muted); font-family: var(--sans); font-weight: 600; font-size: 14px; padding: 10px 20px; border-radius: 10px; cursor: pointer; transition: var(--transition); }
-  .btn-ghost:hover { border-color: var(--muted); color: var(--ink); }
-  .btn-ghost:disabled { opacity: 0.35; cursor: not-allowed; }
-  .quiz-q { animation: slideUp 0.35s cubic-bezier(0.16,1,0.3,1); }
-  .quiz-q .qtext { font-size: 17px; font-weight: 700; margin-bottom: 16px; color: var(--ink); line-height: 1.4; }
-  .quiz-hint { font-size: 13px; color: var(--muted); margin-bottom: 16px; line-height: 1.5; font-style: italic; }
-  .quiz-q .opts { flex-direction: column; }
-  .quiz-q .opt { min-width: 100%; text-align: left; padding: 14px 16px; font-size: 15px; }
-  .quiz-q .slider-continue { margin-top: 16px; width: 100%; background: var(--brand); color: #fff; border: none; font-family: var(--sans); font-weight: 700; font-size: 15px; padding: 13px; border-radius: 10px; cursor: pointer; }
-
-  .tips-banner { margin-top: 16px; background: #fef9f0; border: 1px solid #f5e6c8; border-radius: 14px; padding: 16px 18px; }
-  .tips-heading { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #b8860b; margin-bottom: 10px; }
-  .tip-line { font-size: 13.5px; line-height: 1.55; color: var(--ink); margin-bottom: 8px; }
-  .tip-line:last-child { margin-bottom: 0; }
-  .tip-line strong { font-weight: 700; }
+:root {
+  --bg:#f8fafc;
+  --card:#ffffff;
+  --ink:#0f172a;
+  --muted:#64748b;
+  --line:#e2e8f0;
+  --brand:#4f46e5;
+  --brand-hover:#4338ca;
+  --brand-soft:#e0e7ff;
+  --pos:#10b981;
+  --pos-soft:#d1fae5;
+  --neg:#f43f5e;
+  --neg-soft:#ffe4e6;
+  --warn:#f59e0b;
+  --warn-soft:#fef3c7;
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --shadow:0 4px 12px rgb(15 23 42 / .08);
+  --radius:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--sans);
+  min-height:100vh;
+  padding:32px 16px 80px;
+}
+.wrap{max-width:620px;margin:0 auto}
+header{text-align:center;margin-bottom:28px}
+header h1{font-size:29px;font-weight:800;letter-spacing:-.03em}
+header p{font-size:14px;color:var(--muted);margin-top:6px}
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:24px;
+  box-shadow:var(--shadow);
+  margin-bottom:22px;
+}
+.field{margin-bottom:18px}
+.field:last-child{margin-bottom:0}
+.field label{
+  display:block;
+  font-size:12px;
+  font-weight:700;
+  color:var(--muted);
+  margin-bottom:8px;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+}
+.field input,.field select{
+  width:100%;
+  border:1px solid var(--line);
+  background:var(--bg);
+  color:var(--ink);
+  font:500 15px var(--sans);
+  padding:14px 15px;
+  border-radius:12px;
+}
+.field input:focus,.field select:focus{
+  outline:none;
+  border-color:var(--brand);
+  background:#fff;
+  box-shadow:0 0 0 4px var(--brand-soft);
+}
+.btn{
+  width:100%;
+  border:0;
+  border-radius:12px;
+  padding:15px;
+  background:linear-gradient(135deg,var(--brand),var(--brand-hover));
+  color:#fff;
+  font:700 16px var(--sans);
+  cursor:pointer;
+}
+.btn:hover{filter:brightness(1.05)}
+.btn-ghost{
+  border:1px solid var(--line);
+  background:#fff;
+  color:var(--ink);
+  border-radius:10px;
+  padding:10px 14px;
+  font:600 14px var(--sans);
+  cursor:pointer;
+}
+.btn-ghost:disabled{opacity:.4;cursor:not-allowed}
+.quiz-card{display:none}
+.progress-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom:12px;
+}
+.progress-label{font-size:13px;font-weight:700;color:var(--muted)}
+.progress{
+  height:7px;
+  background:var(--line);
+  border-radius:99px;
+  overflow:hidden;
+  margin-bottom:22px;
+}
+.progress span{
+  display:block;
+  height:100%;
+  width:0;
+  background:var(--brand);
+  transition:width .25s ease;
+}
+.qtext{font-size:18px;font-weight:750;line-height:1.4;margin-bottom:10px}
+.hint{
+  font-size:13px;
+  line-height:1.5;
+  color:var(--muted);
+  background:var(--bg);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:10px 12px;
+  margin-bottom:16px;
+}
+.opts{display:grid;gap:10px}
+.opt{
+  border:1.5px solid var(--line);
+  background:#fff;
+  color:var(--ink);
+  border-radius:11px;
+  padding:13px;
+  text-align:left;
+  font:600 14px var(--sans);
+  cursor:pointer;
+}
+.opt:hover{border-color:var(--brand);background:var(--brand-soft)}
+.slider-wrap{margin:18px 0}
+.slider{width:100%}
+.slider-labels{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  color:var(--muted);
+  font-size:12px;
+  margin-top:8px;
+}
+.slider-value{
+  display:inline-block;
+  min-width:44px;
+  text-align:center;
+  padding:3px 9px;
+  border-radius:99px;
+  background:var(--brand-soft);
+  color:var(--brand);
+  font-weight:800;
+}
+.quiz-nav{display:flex;justify-content:space-between;gap:10px;margin-top:20px}
+.result{display:none}
+.result.active{display:block}
+.rhead{
+  color:var(--brand);
+  font-size:12px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+}
+.rtitle{font-size:22px;font-weight:800;margin:5px 0 18px}
+.score-row{
+  padding:16px;
+  border:1px solid var(--line);
+  background:var(--bg);
+  border-radius:12px;
+  margin-bottom:22px;
+}
+.score-bar{
+  height:10px;
+  background:var(--line);
+  border-radius:99px;
+  overflow:hidden;
+  margin-bottom:8px;
+}
+.score-fill{height:100%;width:0;transition:width .6s ease}
+.score-meta{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  font-size:13px;
+  color:var(--muted);
+}
+.section{margin-bottom:22px}
+.section h3{
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  color:var(--muted);
+  border-bottom:2px solid var(--line);
+  padding-bottom:7px;
+  margin-bottom:4px;
+}
+.factor{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+  padding:10px 0;
+  border-bottom:1px solid var(--line);
+  font-size:14px;
+}
+.factor:last-child{border-bottom:0}
+.badge{
+  flex-shrink:0;
+  border-radius:7px;
+  padding:3px 8px;
+  font-weight:800;
+}
+.badge.pos{background:var(--pos-soft);color:var(--pos)}
+.badge.neg{background:var(--neg-soft);color:var(--neg)}
+.badge.zero{background:var(--bg);color:var(--muted);border:1px solid var(--line)}
+.verdict{
+  border-radius:15px;
+  padding:20px;
+  border:1px solid transparent;
+  margin-top:20px;
+}
+.verdict.strong,.verdict.approved{background:var(--pos-soft);border-color:#86efac}
+.verdict.caution{background:var(--warn-soft);border-color:#fcd34d}
+.verdict.veto{background:var(--neg-soft);border-color:#fda4af}
+.vlabel{font-size:21px;font-weight:800;margin-bottom:5px}
+.vsub{font-size:13px;color:var(--muted);margin-bottom:8px}
+.quarantine{
+  background:#fff;
+  border:1px solid rgb(255 255 255 / .7);
+  border-radius:11px;
+  padding:12px;
+  margin:12px 0 14px;
+}
+.quarantine strong{display:block;font-size:16px;margin-top:3px}
+.verdict ol{padding-left:20px;font-size:14px;line-height:1.55}
+.tips{
+  margin-top:16px;
+  border:1px solid var(--line);
+  background:var(--bg);
+  border-radius:12px;
+  padding:15px;
+}
+.tips h4{font-size:14px;margin-bottom:8px}
+.tips p{font-size:13px;line-height:1.5;color:var(--muted);margin-top:6px}
+.history-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+}
+.history-head h2{font-size:18px}
+.link-btn{
+  border:0;
+  background:transparent;
+  color:var(--neg);
+  font:700 13px var(--sans);
+  cursor:pointer;
+}
+.history-list{display:grid;gap:10px}
+.history-item{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:12px;
+  padding:13px;
+}
+.history-item button{
+  border:0;
+  background:transparent;
+  color:var(--neg);
+  font-size:20px;
+  cursor:pointer;
+}
+.history-title{font-size:14px;font-weight:750}
+.history-meta{font-size:12px;color:var(--muted);margin-top:4px}
+.empty{text-align:center;color:var(--muted);font-size:14px;padding:16px}
+@media(max-width:520px){
+  body{padding-top:20px}
+  .card{padding:18px}
+  .score-meta{align-items:flex-start;flex-direction:column}
+}
 </style>
 </head>
 <body>
 <div class="wrap">
-
   <header>
     <h1>Financial Auditor</h1>
-    <p>Deterministic Rules Engine · <span id="historyCount">0</span></p>
+    <p>Pause, assess and make more intentional purchase decisions.</p>
   </header>
 
   <div class="card">
     <div class="field">
-      <label>Item or reason</label>
-      <input type="text" id="itemName" placeholder="e.g. 35mm f/1.4 lens · Loan to John" onfocus="this.dataset.ph=this.placeholder;this.placeholder=''" onblur="this.placeholder=this.dataset.ph||''">
+      <label for="itemName">Item</label>
+      <input id="itemName" type="text" placeholder="What are you considering buying?">
     </div>
-    <div class="row2" style="display:grid; grid-template-columns: 1fr 2fr; gap: 16px;">
-      <div class="field">
-        <label>Amount ($)</label>
-        <input type="number" id="itemValue" step="0.01" placeholder="530.00" onfocus="this.dataset.ph=this.placeholder;this.placeholder=''" onblur="this.placeholder=this.dataset.ph||''">
-      </div>
-      <div class="field">
-        <label>Type of expense</label>
-        <select id="itemCategory">
-          <option value="essencial">Essential (maintenance/health/work)</option>
-          <option value="ferramenta">Tool / productive equipment</option>
-          <option value="lazer">Leisure / aesthetics / convenience</option>
-          <option value="terceiro">Help / loan to a third party</option>
-        </select>
-      </div>
+    <div class="field">
+      <label for="itemValue">Amount (BRL)</label>
+      <input id="itemValue" type="number" min="0" step="0.01" placeholder="0.00">
+    </div>
+    <div class="field">
+      <label for="itemCategory">Category</label>
+      <select id="itemCategory">
+        <option value="essencial">Essential</option>
+        <option value="ferramenta">Tool / Productive Equipment</option>
+        <option value="lazer">Leisure / Aesthetics / Convenience</option>
+        <option value="terceiro">Help / Loan to Third Party</option>
+      </select>
     </div>
   </div>
 
-  <div class="card" id="quizCard" style="display:none;">
-    <div class="quiz-progress"><div class="quiz-progress-fill" id="quizFill"></div></div>
-    <div class="quiz-step-label" id="quizStepLabel"></div>
+  <div class="card quiz-card" id="quizCard">
+    <div class="progress-row">
+      <span class="progress-label" id="quizStepLabel"></span>
+    </div>
+    <div class="progress"><span id="quizFill"></span></div>
     <div id="quizQuestion"></div>
     <div class="quiz-nav">
-      <button class="btn-ghost" id="quizBack" onclick="quizBack()">Back</button>
+      <button class="btn-ghost" id="quizBack" type="button">Back</button>
+      <button class="btn-ghost" id="sliderNext" type="button" style="display:none">Continue</button>
     </div>
   </div>
 
-  <button class="btn" id="startBtn" onclick="startQuiz()">Start Audit</button>
+  <button class="btn" id="startBtn" type="button">Start Audit</button>
 
-  <div class="card result" id="resultEl" style="margin-top:24px;"></div>
+  <div class="card result" id="resultEl" style="margin-top:22px"></div>
 
-  <div class="history">
-    <h2>History <span id="clearHistory">Clear</span></h2>
-    <div id="historyList"><div class="empty">No analysis recorded yet.</div></div>
+  <div class="card">
+    <div class="history-head">
+      <h2>History</h2>
+      <button class="link-btn" id="clearHistory" type="button">Clear</button>
+    </div>
+    <div class="history-list" id="historyList"></div>
   </div>
-
 </div>
 
 <script>
-const STORAGE_KEY = 'auditor_v3_en';
-function loadHistory(){ try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); }catch(e){ return []; } }
-function saveHistory(a){ localStorage.setItem(STORAGE_KEY, JSON.stringify(a)); }
-function escapeHtml(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
-function jsAttr(s){ return escapeHtml(s).replace(/'/g, '&#39;').replace(/"/g, '&quot;'); }
-
-const QUESTIONS = [
-  {id:'q_need', type:'buttons', f:1, noDampen:true, text:'Does this solve a real need right now?', opts:[
-    {label:'Yes, needed', w:18},{label:'Sort of', w:0},{label:'Can wait', w:-15}
+const STORAGE_KEY='financial_auditor_v4';
+const QUESTIONS=[
+  {id:'q_need',f:1,type:'buttons',text:'Does this solve a real need right now?',hint:'If you did not buy this today, what would actually break or stop working?',opts:[
+    ['Yes, needed',18],['Sort of',0],['Can wait',-15]
   ]},
-  {id:'q_own', type:'buttons', f:1, noDampen:true, text:'Does this purchase unlock a meaningful new capability you don\u2019t currently have?', opts:[
-    {label:'Yes, my current gear/tools cannot do this at all', w:10},
-    {label:'Somewhat, real limitations exist in what I have', w:0},
-    {label:'No, it overlaps almost completely with what I already own', w:-22}
+  {id:'q_own',f:1,type:'buttons',text:'Does this unlock a meaningful capability you do not currently have?',hint:'List what you already own that could do this and what it truly cannot do.',opts:[
+    ['Yes, I cannot do this with what I own',10],['Somewhat, real limitations exist',0],['No, it mostly duplicates what I own',-22]
   ]},
-  {id:'q_pattern', type:'buttons', f:1, noDampen:true, text:'Have you bought similar items recently that are still unused or underused?', opts:[
-    {label:'None', w:8},{label:'One', w:-6},{label:'Several', w:-20}
+  {id:'q_pattern',f:1,type:'buttons',text:'Have you bought similar items recently that remain unused?',hint:'Recent unused purchases are a strong warning sign.',opts:[
+    ['None',8],['One',-6],['Several',-20]
   ]},
-  {id:'q_alt', type:'buttons', f:1, noDampen:true, text:'Could you solve this same problem for less money?', opts:[
-    {label:'No, I\u2019ve compared and this is the best value', w:14},
-    {label:'Haven\u2019t seriously checked', w:-2},
-    {label:'Yes, there\u2019s a viable cheaper way I\u2019m ignoring', w:-16}
+  {id:'q_alt',f:1,type:'buttons',text:'Could you solve the same problem for less?',hint:'Name one cheaper alternative before answering.',opts:[
+    ['No, I compared options',14],['I have not checked seriously',-2],['Yes, there is a viable cheaper option',-16]
   ]},
-  {id:'q_use', type:'slider', f:2, text:'Will this get good use / return?',
-    min:-15, max:15, minLabel:'Little use', maxLabel:'Very useful'},
-  {id:'q_price', type:'buttons', f:2, text:'Is the price fair for the situation?', opts:[
-    {label:'Fair / reasonable', w:8},{label:'Acceptable', w:2},{label:'Too high', w:-12}
+  {id:'q_use',f:2,type:'slider',text:'How much realistic use will this get?',hint:'Count realistic uses in the next 30 days.',min:-15,max:15,minLabel:'Little use',maxLabel:'Frequent use'},
+  {id:'q_price',f:2,type:'buttons',text:'Is the price fair for your situation?',hint:'Have you compared prices or does it merely feel acceptable?',opts:[
+    ['Fair and reasonable',8],['Acceptable',2],['Too high',-12]
   ]},
-  {id:'q_return', type:'slider', f:2, text:'Will you get this money back?',
-    min:-16, max:16, minLabel:"Won't recover", maxLabel:'Full recovery'},
-  {id:'q_longterm', type:'buttons', f:2, text:'Is it worth it long-term?', opts:[
-    {label:'Yes, clearly', w:10},{label:'Somewhat', w:0},{label:"Not worth it", w:-14}
+  {id:'q_return',f:2,type:'slider',text:'How much value or money will this return?',hint:'Treat the money as gone forever. Does it still make sense?',min:-16,max:16,minLabel:'No return',maxLabel:'Strong return'},
+  {id:'q_longterm',f:2,type:'buttons',text:'Will it still be worthwhile one year from now?',hint:'Picture the item after novelty has faded.',opts:[
+    ['Yes, clearly',10],['Maybe',0],['Probably not',-14]
   ]},
-  {id:'q_trigger', type:'buttons', f:3, text:'How did this item enter your radar?', opts:[
-    {label:'I searched for it', w:6},{label:'Ad or algorithm', w:-4},{label:'Social media / someone else has it', w:-12}
+  {id:'q_trigger',f:3,type:'buttons',text:'How did this item enter your radar?',hint:'Ads and feeds are designed to manufacture urgency.',opts:[
+    ['I searched for it',6],['Ad or algorithm',-4],['Social media or someone else has it',-12]
   ]},
-  {id:'q_emotion', type:'buttons', f:3, text:'What is your emotional state right now?', opts:[
-    {label:'Calm and neutral', w:5},{label:'Bored, stressed, or anxious', w:-8},{label:'Excited / euphoric', w:-6}
+  {id:'q_emotion',f:3,type:'buttons',text:'What is your emotional state right now?',hint:'Stress, boredom and excitement can all distort spending decisions.',opts:[
+    ['Calm and neutral',5],['Bored, stressed or anxious',-8],['Excited or euphoric',-6]
   ]},
-  {id:'q_habit', type:'buttons', f:3, text:'Does this support a productive habit (health, work, skill)?', opts:[
-    {label:'Yes, directly', w:14},{label:'Indirectly', w:4},{label:'No', w:-6}
+  {id:'q_habit',f:3,type:'buttons',text:'Does this support a productive habit?',hint:'Does it build health, work or skill, or only fill a moment?',opts:[
+    ['Yes, directly',14],['Indirectly',4],['No',-6]
   ]},
-  {id:'q_motive', type:'buttons', f:3, text:'Which best describes your decision process?', opts:[
-    {label:'Planned in advance', w:8},{label:'Decided just now, no plan', w:-8},{label:'Felt urgent, had to act fast', w:-20}
+  {id:'q_motive',f:3,type:'buttons',text:'Which best describes your decision process?',hint:'Think about what happened immediately before the desire appeared.',opts:[
+    ['Planned in advance',8],['Decided just now',-8],['It felt urgent',-20]
   ]},
-  {id:'q_budget', type:'slider', f:3, text:'Does it fit your budget this month?',
-    min:-16, max:16, minLabel:"Won't cover", maxLabel:'Comfortable'},
+  {id:'q_budget',f:3,type:'slider',text:'How comfortably does it fit this month?',hint:'Name the bills or goals competing for this money.',min:-16,max:16,minLabel:'Does not fit',maxLabel:'Comfortable'}
 ];
 
-const CATEGORY_BASE = { essencial:44, ferramenta:28, lazer:36, terceiro:8 };
-const T_VETO = 40; const T_CAUTION = 60; const T_APPROVED = 80;
-const CATEGORY_LABEL = {
-  essencial:'Essential', ferramenta:'Tool / Productive Equipment',
-  lazer:'Leisure / Aesthetics / Convenience', terceiro:'Help / Loan to Third Party'
+const CATEGORY_BASE={essencial:44,ferramenta:28,lazer:36,terceiro:8};
+const CATEGORY_LABEL={
+  essencial:'Essential',
+  ferramenta:'Tool / Productive Equipment',
+  lazer:'Leisure / Aesthetics / Convenience',
+  terceiro:'Help / Loan to Third Party'
 };
 
-let selections = {};
+let answers={};
+let quizStep=0;
 
-// Reflection hints shown per question to force deliberate thinking before answering.
-const HINTS = {
-  q_need:   'Pause. If you did not buy this today, what would actually break or stop working?',
-  q_own:    'List what you already own that could do this. Be precise about what it cannot do.',
-  q_pattern:'Recent purchases sitting unused are the strongest predictor of this one joining them.',
-  q_alt:    'Name one cheaper way to solve the same problem. If you can, why not use it?',
-  q_use:    'Count the realistic uses in the next 30 days. Not the ideal ones. The realistic ones.',
-  q_price:  'Have you actually compared prices, or does it just feel acceptable?',
-  q_return: 'Imagine this money is gone forever. Does the decision still feel right?',
-  q_longterm:'Picture yourself with this item one year from now. Still using it?',
-  q_trigger:'Ads and algorithms are engineered to create wants you did not have five minutes ago.',
-  q_emotion:'Boredom, stress, and excitement all push the brain toward buying for the dopamine, not the item.',
-  q_habit:  'Does this build something (a skill, your health, your work) or just fill a moment?',
-  q_motive: 'What happened right before you wanted this? An ad? Stress? Boredom? A real problem?',
-  q_budget: 'What else competes for this money this month? Name it before answering.'
-};
+function getQuarantine(value){
+  if(value<=50)return '2 hours';
+  if(value<=100)return '6 hours';
+  if(value<=150)return '1 day';
+  if(value<=200)return '2 days';
+  if(value<=300)return '3 days';
+  if(value<=400)return '5 days';
+  if(value<=500)return '7 days';
+  if(value<=700)return '10 days';
+  if(value<1000)return '15 days';
+  return '30 days';
+}
 
-let quizStep = -1;
+function loadHistory(){
+  try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]')}
+  catch{return[]}
+}
+
+function saveHistory(items){
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(items));
+}
+
+function escapeHtml(value){
+  const div=document.createElement('div');
+  div.textContent=String(value);
+  return div.innerHTML;
+}
 
 function startQuiz(){
-  const item = document.getElementById('itemName').value.trim();
-  const value = parseFloat(document.getElementById('itemValue').value);
-  if(!item || isNaN(value)){
-    alert('Fill in the item and amount first.');
+  const item=document.getElementById('itemName').value.trim();
+  const value=Number(document.getElementById('itemValue').value);
+  if(!item||!Number.isFinite(value)||value<=0){
+    alert('Fill in a valid item and amount.');
     return;
   }
-  selections = {};
-  quizStep = 0;
-  document.getElementById('startBtn').style.display = 'none';
+  answers={};
+  quizStep=0;
+  document.getElementById('startBtn').style.display='none';
   document.getElementById('resultEl').classList.remove('active');
-  document.getElementById('quizCard').style.display = 'block';
-  renderQuizStep();
+  document.getElementById('quizCard').style.display='block';
+  renderQuestion();
 }
 
-function renderQuizStep(){
-  const total = QUESTIONS.length;
-  document.getElementById('quizFill').style.width = ((quizStep) / total * 100) + '%';
-  document.getElementById('quizStepLabel').textContent = 'Question ' + (quizStep+1) + ' of ' + total;
-  document.getElementById('quizBack').disabled = quizStep === 0;
+function renderQuestion(){
+  const q=QUESTIONS[quizStep];
+  document.getElementById('quizStepLabel').textContent=`Question ${quizStep+1} of ${QUESTIONS.length}`;
+  document.getElementById('quizFill').style.width=`${quizStep/QUESTIONS.length*100}%`;
+  document.getElementById('quizBack').disabled=quizStep===0;
+  const next=document.getElementById('sliderNext');
 
-  const q = QUESTIONS[quizStep];
-  let inner;
-  if(q.type === 'slider'){
-    const prev = selections[q.id];
-    const prevStep = prev && prev.step !== undefined ? prev.step : 3;
-    inner = `<div class="quiz-q">
+  if(q.type==='buttons'){
+    next.style.display='none';
+    document.getElementById('quizQuestion').innerHTML=`
       <div class="qtext">${escapeHtml(q.text)}</div>
-      <div class="quiz-hint">${escapeHtml(HINTS[q.id]||'')}</div>
+      <div class="hint">${escapeHtml(q.hint)}</div>
+      <div class="opts">
+        ${q.opts.map((opt,index)=>`<button class="opt" type="button" data-index="${index}">${escapeHtml(opt[0])}</button>`).join('')}
+      </div>`;
+    document.querySelectorAll('.opt').forEach(button=>{
+      button.addEventListener('click',()=>{
+        const index=Number(button.dataset.index);
+        answers[q.id]={label:q.opts[index][0],weight:q.opts[index][1],f:q.f};
+        nextQuestion();
+      });
+    });
+  }else{
+    next.style.display='block';
+    const saved=answers[q.id];
+    const step=saved?saved.step:3;
+    const weight=Math.round(q.min+(q.max-q.min)*(step/6));
+    answers[q.id]={label:weight>0?'Favorable':weight<0?'Unfavorable':'Neutral',weight,f:q.f,step};
+    document.getElementById('quizQuestion').innerHTML=`
+      <div class="qtext">${escapeHtml(q.text)}</div>
+      <div class="hint">${escapeHtml(q.hint)}</div>
       <div class="slider-wrap">
-        <div class="slider-tick"></div>
-        <input type="range" class="slider" min="0" max="6" value="${prevStep}" step="1"
-          data-q="${q.id}" data-min="${q.min}" data-max="${q.max}" data-f="${q.f}"
-          data-text="${jsAttr(q.text)}"
-          oninput="pickSlider('${q.id}')">
-      </div>
-      <div class="slider-labels"><span>${escapeHtml(q.minLabel)}</span><span class="slider-val" id="sv_${q.id}">·</span><span>${escapeHtml(q.maxLabel)}</span></div>
-      <button class="slider-continue" onclick="quizNext()">Continue</button>
-    </div>`;
-  } else {
-    inner = `<div class="quiz-q">
-      <div class="qtext">${escapeHtml(q.text)}</div>
-      <div class="quiz-hint">${escapeHtml(HINTS[q.id]||'')}</div>
-      <div class="opts">` +
-      q.opts.map((o,i) =>
-        `<div class="opt${selClass(q.id,i)}" data-q="${q.id}" data-i="${i}" onclick="pickQuiz('${q.id}',${i},${o.w},'${jsAttr(q.text)}::${jsAttr(o.label)}',${q.f})">${escapeHtml(o.label)}</div>`
-      ).join('') + `</div>
-    </div>`;
+        <input class="slider" id="currentSlider" type="range" min="0" max="6" step="1" value="${step}">
+        <div class="slider-labels">
+          <span>${escapeHtml(q.minLabel)}</span>
+          <span class="slider-value" id="sliderValue">${weight>0?'+':''}${weight}</span>
+          <span>${escapeHtml(q.maxLabel)}</span>
+        </div>
+      </div>`;
+    document.getElementById('currentSlider').addEventListener('input',event=>{
+      const current=Number(event.target.value);
+      const currentWeight=Math.round(q.min+(q.max-q.min)*(current/6));
+      answers[q.id]={label:currentWeight>0?'Favorable':currentWeight<0?'Unfavorable':'Neutral',weight:currentWeight,f:q.f,step:current};
+      document.getElementById('sliderValue').textContent=`${currentWeight>0?'+':''}${currentWeight}`;
+    });
   }
-  document.getElementById('quizQuestion').innerHTML = inner;
-  if(q.type === 'slider') pickSlider(q.id);
 }
 
-function selClass(qid, i){
-  const s = selections[qid];
-  if(!s || s.optIndex !== i) return '';
-  return s.w < 0 ? ' sel-neg' : ' sel';
-}
-
-function pickQuiz(qid, i, w, label, f){
-  selections[qid] = {w, label, f, optIndex: i};
-  document.querySelectorAll(`.opt[data-q="${qid}"]`).forEach(el => el.classList.remove('sel','sel-neg'));
-  const el = document.querySelector(`.opt[data-q="${qid}"][data-i="${i}"]`);
-  el.classList.add(w < 0 ? 'sel-neg' : 'sel');
-  setTimeout(quizNext, 280);
-}
-
-function quizNext(){
-  const q = QUESTIONS[quizStep];
-  if(q.type === 'slider'){
-    const el = document.querySelector(`.slider[data-q="${q.id}"]`);
-    if(el && selections[q.id]) selections[q.id].step = parseInt(el.value,10);
-  }
-  if(quizStep < QUESTIONS.length - 1){
+function nextQuestion(){
+  if(quizStep<QUESTIONS.length-1){
     quizStep++;
-    renderQuizStep();
-  } else {
-    document.getElementById('quizCard').style.display = 'none';
-    document.getElementById('startBtn').style.display = 'block';
-    document.getElementById('startBtn').textContent = 'Audit Again';
-    quizStep = -1;
-    runAnalysis();
+    renderQuestion();
+  }else{
+    finishQuiz();
   }
 }
 
-function quizBack(){
-  if(quizStep > 0){
+function finishQuiz(){
+  document.getElementById('quizCard').style.display='none';
+  document.getElementById('startBtn').style.display='block';
+  document.getElementById('startBtn').textContent='Audit Again';
+  runAnalysis();
+}
+
+function goBack(){
+  if(quizStep>0){
     quizStep--;
-    renderQuizStep();
+    renderQuestion();
   }
 }
 
-function pickSlider(qid){
-  const el = document.querySelector(`.slider[data-q="${qid}"]`);
-  const step = parseInt(el.value,10); 
-  const min = parseFloat(el.dataset.min), max = parseFloat(el.dataset.max);
-  const w = Math.round(min + (max-min)*(step/6));
-  const text = el.dataset.text;
-  const f = parseInt(el.dataset.f,10);
-  const valEl = document.getElementById('sv_'+qid);
-  valEl.textContent = (w>0?'+':'')+w;
-  valEl.className = 'slider-val ' + (w>0?'pos':(w<0?'neg':'zero'));
-  selections[qid] = {w, label:`${text}::${w>0?'favorable':(w<0?'unfavorable':'neutral')}`, f};
-}
+function runAnalysis(){
+  const item=document.getElementById('itemName').value.trim();
+  const value=Number(document.getElementById('itemValue').value);
+  const category=document.getElementById('itemCategory').value;
+  let dampen=1;
+  let bonus=0;
 
-function pick(qid, i, w, label, f){
-  document.querySelectorAll(`.opt[data-q="${qid}"]`).forEach(el => el.classList.remove('sel','sel-neg'));
-  document.querySelector(`.opt[data-q="${qid}"][data-i="${i}"]`).classList.add(w < 0 ? 'sel-neg' : 'sel');
-  selections[qid] = {w, label, f};
+  if(value<=30){dampen=.15;bonus=15}
+  else if(value<=50){dampen=.3;bonus=12}
+  else if(value<=150){dampen=.55;bonus=6}
+  else if(value<=400){dampen=.8}
+
+  let score=CATEGORY_BASE[category]+bonus;
+  const groups={1:[],2:[],3:[]};
+
+  for(const q of QUESTIONS){
+    const answer=answers[q.id];
+    if(!answer)continue;
+    const weight=answer.weight<0?Math.round(answer.weight*dampen):answer.weight;
+    score+=weight;
+    groups[q.f].push({label:`${q.text}: ${answer.label}`,weight});
+  }
+
+  if(bonus>0){
+    groups[2].push({label:`Low ticket: limited financial exposure`,weight:bonus});
+  }
+
+  score=Math.max(0,Math.min(100,score));
+
+  let verdict='REJECTED';
+  let verdictClass='veto';
+  let status='REJECTED';
+  let color='var(--neg)';
+
+  if(score>=80){
+    verdict='STRONG BUY';
+    verdictClass='strong';
+    status='STRONG BUY';
+    color='var(--pos)';
+  }else if(score>=60){
+    verdict='APPROVED';
+    verdictClass='approved';
+    status='APPROVED';
+    color='var(--pos)';
+  }else if(score>=40){
+    verdict='PROCEED WITH CAUTION';
+    verdictClass='caution';
+    status='CAUTION ZONE';
+    color='var(--warn)';
+  }
+
+  const negatives=QUESTIONS
+    .map(q=>({q,answer:answers[q.id]}))
+    .filter(x=>x.answer&&x.answer.weight<0)
+    .sort((a,b)=>a.answer.weight-b.answer.weight);
+
+  const directives=[];
+  if(verdictClass==='veto'){
+    directives.push('Do not buy it now. Complete the recommended quarantine first.');
+    if(negatives[0])directives.push(`Main concern: ${negatives[0].q.text.toLowerCase()}`);
+  }else if(verdictClass==='caution'){
+    directives.push('You may proceed later, but only after the quarantine period.');
+    if(negatives[0])directives.push(`Review this risk: ${negatives[0].q.text.toLowerCase()}`);
+  }else{
+    directives.push('The purchase appears reasonable based on your answers.');
+    directives.push('Still respect the quarantine period before paying.');
+  }
+
+  const quarantine=getQuarantine(value);
+  const sectionTitles={
+    1:'Technical Viability / Asset',
+    2:'Cost-Benefit / ROI',
+    3:'Behavior / Habit'
+  };
+
+  const sections=[1,2,3].map(group=>`
+    <div class="section">
+      <h3>${group}. ${sectionTitles[group]}</h3>
+      ${(groups[group].length?groups[group]:[{label:'No factor selected',weight:0}]).map(factor=>`
+        <div class="factor">
+          <span>${escapeHtml(factor.label)}</span>
+          <span class="badge ${factor.weight>0?'pos':factor.weight<0?'neg':'zero'}">${factor.weight>0?'+':''}${factor.weight}</span>
+        </div>`).join('')}
+    </div>`).join('');
+
+  const html=`
+    <div class="rhead">${escapeHtml(CATEGORY_LABEL[category])}</div>
+    <div class="rtitle">${escapeHtml(item)}: R$ ${value.toFixed(2)}</div>
+    <div class="score-row">
+      <div class="score-bar"><div class="score-fill" id="scoreFill" style="background:${color}"></div></div>
+      <div class="score-meta">
+        <span>Score <strong>${score}/100</strong></span>
+        <span>${status}</span>
+      </div>
+    </div>
+    ${sections}
+    <div class="verdict ${verdictClass}">
+      <div class="vlabel">${verdict}</div>
+      <div class="vsub">Final score: ${score}/100</div>
+      <div class="quarantine">
+        Recommended quarantine
+        <strong>${quarantine}</strong>
+      </div>
+      <ol>${directives.map(item=>`<li>${escapeHtml(item)}</li>`).join('')}</ol>
+    </div>
+    <div class="tips">
+      <h4>Quarantine scale</h4>
+      <p>Up to R$50: 2 hours · R$50.01–100: 6 hours · R$100.01–150: 1 day · R$150.01–200: 2 days.</p>
+      <p>R$200.01–300: 3 days · R$300.01–400: 5 days · R$400.01–500: 7 days · R$500.01–700: 10 days · R$700.01–999.99: 15 days · R$1,000+: 30 days.</p>
+    </div>`;
+
+  const result=document.getElementById('resultEl');
+  result.innerHTML=html;
+  result.classList.add('active');
+  setTimeout(()=>document.getElementById('scoreFill').style.width=`${score}%`,50);
+  result.scrollIntoView({behavior:'smooth',block:'start'});
+
+  const history=loadHistory();
+  history.push({
+    item,
+    value:value.toFixed(2),
+    score,
+    verdict,
+    quarantine,
+    date:new Date().toLocaleDateString('en-US')
+  });
+  saveHistory(history);
+  renderHistory();
 }
 
 function renderHistory(){
-  const hist = loadHistory();
-  document.getElementById('historyCount').textContent = hist.length + (hist.length===1?' analysis':' analyses');
-  const listEl = document.getElementById('historyList');
-  if(hist.length===0){ listEl.innerHTML = '<div class="empty">No analysis recorded yet.</div>'; return; }
-  listEl.innerHTML = hist.slice().reverse().map((h,idx) => {
-    const realIdx = hist.length-1-idx;
-    const cls = h.verdict==='STRONG BUY'?'strong':h.verdict==='APPROVED'?'approved':h.verdict==='PROCEED WITH CAUTION'?'caution':'veto';
-    const short = h.verdict==='STRONG BUY'?'STRONG':h.verdict==='APPROVED'?'APPROVED':h.verdict==='PROCEED WITH CAUTION'?'CAUTION':'VETO';
-    return `<div class="history-item">
-      <div class="hi-body" onclick="showHistoryItem(${realIdx})">
-        <div class="hi-top"><span>${escapeHtml(h.item)}</span><span>$${escapeHtml(h.value)}</span></div>
-        <div class="hi-meta"><span class="pill ${cls}">${short}</span> <span>Score ${h.score}</span> <span>·</span> <span>${h.date}</span></div>
-      </div>
-      <div class="hi-delete" onclick="deleteHistoryItem(${realIdx}, event)" title="Delete">×</div>
-    </div>`;
-  }).join('');
-}
-
-function deleteHistoryItem(idx, ev){
-  ev.stopPropagation();
-  const hist = loadHistory();
-  if(!hist[idx]) return;
-  if(!confirm('Delete "' + hist[idx].item + '"?')) return;
-  hist.splice(idx, 1);
-  saveHistory(hist);
-  renderHistory();
-}
-
-function showHistoryItem(idx){
-  const h = loadHistory()[idx]; if(!h) return;
-  const r = document.getElementById('resultEl');
-  r.innerHTML = h.html; 
-  r.classList.remove('active');
-  void r.offsetWidth; 
-  r.classList.add('active');
-  setTimeout(() => {
-    const fill = r.querySelector('.score-bar-fill');
-    if(fill) fill.style.width = Math.max(0, Math.min(100, h.score)) + '%';
-  }, 50);
-
-  // Inject "Audit Again" button at the bottom of the result card
-  const btn = document.createElement('button');
-  btn.className = 'btn';
-  btn.style.marginTop = '16px';
-  btn.textContent = 'Audit Again';
-  btn.onclick = () => {
-    document.getElementById('itemName').value = h.item || '';
-    document.getElementById('itemValue').value = h.value || '';
-    r.classList.remove('active');
-    window.scrollTo({top:0, behavior:'smooth'});
-    setTimeout(startQuiz, 300);
-  };
-  r.appendChild(btn);
-
-  window.scrollTo({top:r.offsetTop-24, behavior:'smooth'});
-}
-
-document.getElementById('clearHistory').addEventListener('click', ()=>{
-  if(confirm('Clear all history?')){ saveHistory([]); renderHistory(); }
-});
-
-function fClass(w){ return w>0?'pos':(w<0?'neg':'zero'); }
-function fSign(w){ return (w>0?'+':'')+w; }
-
-function runAnalysis(){
-  const item = document.getElementById('itemName').value.trim() || 'Unnamed item';
-  const value = parseFloat(document.getElementById('itemValue').value) || 0;
-  const cat = document.getElementById('itemCategory').value;
-
-  let ticketDampen = 1;
-  let ticketBonus = 0;
-  if(value > 0){
-    if(value <= 30){ ticketDampen = 0.15; ticketBonus = 15; }
-    else if(value <= 50){ ticketDampen = 0.3; ticketBonus = 12; }
-    else if(value <= 150){ ticketDampen = 0.55; ticketBonus = 6; }
-    else if(value <= 400){ ticketDampen = 0.8; ticketBonus = 0; }
+  const history=loadHistory();
+  const list=document.getElementById('historyList');
+  if(!history.length){
+    list.innerHTML='<div class="empty">No analysis recorded yet.</div>';
+    return;
   }
-
-  let score = CATEGORY_BASE[cat] + ticketBonus;
-  const byFilter = {1:[],2:[],3:[]};
-  Object.entries(selections).forEach(([qid, s]) => {
-    const qDef = QUESTIONS.find(q => q.id === qid);
-    const exempt = qDef && qDef.noDampen;
-    const w = (s.w < 0 && !exempt) ? Math.round(s.w * ticketDampen) : s.w;
-    score += w;
-    const [q,a] = s.label.split('::');
-    byFilter[s.f].push({label:`${q}: ${a}`, w, qid});
-  });
-  if(ticketBonus > 0){
-    byFilter[2].push({label:`Low ticket ($${value.toFixed(2)}): negligible financial risk`, w:ticketBonus});
-  }
-
-  score = Math.max(0, Math.min(100, score));
-  let verdict, vClass, barColor;
-  if(score >= T_APPROVED){ verdict='STRONG BUY'; vClass='strong'; barColor='var(--pos)'; }
-  else if(score >= T_CAUTION){ verdict='APPROVED'; vClass='approved'; barColor='var(--pos)'; }
-  else if(score >= T_VETO){ verdict='PROCEED WITH CAUTION'; vClass='caution'; barColor='#f59e0b'; }
-  else { verdict='REJECTED'; vClass='veto'; barColor='var(--neg)'; }
-  const approved = score >= T_VETO;
-
-  [1,2,3].forEach(f => { if(byFilter[f].length===0) byFilter[f].push({label:'No factor selected, neutral', w:0}); });
-
-  const DIRECTIVE_MAP = {
-    q_own:    'Use what you already own. This purchase duplicates a working asset.',
-    q_pattern:'Stop the acquisition cycle. Use or sell the unused items first.',
-    q_motive: 'Wait 48 hours and re-evaluate. Impulse fades, real need does not.',
-    q_need:   'Postpone. Revisit when it becomes an actual need.',
-    q_alt:    'Check the cheaper alternative first before committing.',
-    q_budget: 'This strains your month. Delay until cash flow recovers.',
-    q_price:  'Search for a better price before buying.',
-    q_use:    'Low expected use. The cost-per-use does not justify it.',
-    q_return: 'Treat this money as gone. Only proceed if you accept the loss.',
-    q_longterm:'Weak long-term value. Reconsider whether it earns its keep.',
-    q_habit:  'No habit payoff. This is consumption, not investment.',
-    q_trigger:'This want was manufactured by an ad or feed. Unfollow, mute, or block the source.',
-    q_emotion:'Address the feeling directly (a walk, a call, a break), not the purchase.'
-  };
-  
-  const negs = [1,2,3].flatMap(f => byFilter[f]).filter(x => x.w < 0 && x.qid).sort((a,b) => a.w - b.w);
-  let directives;
-  if(vClass === 'veto'){
-    directives = negs.slice(0,2).map(x => DIRECTIVE_MAP[x.qid]).filter(Boolean);
-    if(directives.length === 0) directives = ['Better not to proceed right now.'];
-    if(directives.length === 1) directives.push('Re-run if a negative factor changes.');
-  } else if(vClass === 'caution'){
-    directives = ['You can proceed, but be aware of the risks below.'];
-    directives.push(negs.length > 0 && DIRECTIVE_MAP[negs[0].qid]
-      ? 'Key risk: ' + DIRECTIVE_MAP[negs[0].qid].toLowerCase()
-      : 'No critical issues, but review your answers.');
-  } else {
-    directives = ['You can go ahead.'];
-    directives.push(negs.length > 0 && DIRECTIVE_MAP[negs[0].qid]
-      ? 'Minor caveat: ' + DIRECTIVE_MAP[negs[0].qid].toLowerCase()
-      : 'No major concerns flagged.');
-  }
-
-  const secHtml = (n,title,arr) => `<div class="sec"><h3>${n}. ${title}</h3>` +
-    arr.map(x=>`<div class="factor"><span class="flabel">${escapeHtml(x.label)}</span><span class="fval ${fClass(x.w)}">${fSign(x.w)}</span></div>`).join('') + '</div>';
-
-  // Impulse-Aware Tips: pick up to 2 tips by priority order, no repeats.
-  const q_motive_ans = selections.q_motive ? selections.q_motive.label.split('::')[1] : null;
-  const q_own_ans = selections.q_own ? selections.q_own.label.split('::')[1] : null;
-  const q_need_ans = selections.q_need ? selections.q_need.label.split('::')[1] : null;
-  const q_pattern_ans = selections.q_pattern ? selections.q_pattern.label.split('::')[1] : null;
-  const q_trigger_ans = selections.q_trigger ? selections.q_trigger.label.split('::')[1] : null;
-  const q_emotion_ans = selections.q_emotion ? selections.q_emotion.label.split('::')[1] : null;
-  const q_budget_raw = selections.q_budget ? selections.q_budget.w : null;
-  const q_return_raw = selections.q_return ? selections.q_return.w : null;
-
-  const TIP_RULES = [
-    { test: () => q_motive_ans === 'Felt urgent, had to act fast',
-      tip: '⏸️ <strong>Impulse detector:</strong> Strong emotions can trigger spending. Try a 10-minute pause – walk, drink water, or breathe – before clicking "buy".' },
-    { test: () => q_pattern_ans === 'Several',
-      tip: '🔂 <strong>Acquisition loop:</strong> The buying high fades on arrival. That is why the last purchases sit unused. The next one will too. Break the loop, not the bank.' },
-    { test: () => q_trigger_ans === 'Ad or algorithm' || q_trigger_ans === 'Social media / someone else has it',
-      tip: '🎯 <strong>Engineered want:</strong> You didn\u2019t find this item. It found you. Algorithms create desires on demand. Mute the source and see if the want survives a week.' },
-    { test: () => q_emotion_ans === 'Bored, stressed, or anxious',
-      tip: '🧘 <strong>Feeling, not filling:</strong> Boredom and stress push the brain to buy for the dopamine hit, not the item. Name the feeling and address it directly. The cart can wait.' },
-    { test: () => cat === 'lazer' && score < 45,
-      tip: '📦 <strong>30-day rule:</strong> For non-essential treats, write it down and wait 30 days. Chances are, the urge will pass.' },
-    { test: () => q_motive_ans === 'Decided just now, no plan' && score < 60,
-      tip: '🧠 <strong>Dopamine reality check:</strong> Our brain confuses wanting with liking. Visualize owning the item a month from now – will it still matter?' },
-    { test: () => q_budget_raw !== null && q_budget_raw < -5,
-      tip: '💰 <strong>Pay yourself first:</strong> If this purchase means sacrificing a bill or savings goal, picture the stress tomorrow. Wait until the next paycheck.' },
-    { test: () => q_own_ans === 'No, it overlaps almost completely with what I already own',
-      tip: '🔁 <strong>Duplication trap:</strong> You already own something functional. Ask: "What specific problem does the new one solve that the old one can\u2019t?"' },
-    { test: () => cat === 'lazer' && value > 200,
-      tip: '📉 <strong>Cost-per-use test:</strong> Divide the price by the number of times you\u2019ll realistically use it in a year. A $400 jacket worn twice = $200 per wear. Is that acceptable?' },
-    { test: () => q_return_raw !== null && q_return_raw < -10,
-      tip: '💸 <strong>Sunk cost awareness:</strong> Treat this money as gone forever. If you wouldn\u2019t burn that cash in your hand, reconsider.' },
-    { test: () => cat === 'terceiro',
-      tip: '🤝 <strong>Guard your generosity:</strong> Lending to others can be noble, but never at the cost of your own stability. Have a direct conversation about expectations first.' },
-    { test: () => q_need_ans === 'Can wait',
-      tip: '🕰️ <strong>Urgency illusion:</strong> Almost nothing is truly urgent. If it can wait a week, let it – you\u2019ll make a clearer decision then.' },
-    { test: () => score >= 45 && approved,
-      tip: '✅ <strong>Intentional yes:</strong> Even when it\u2019s a good decision, sleep on it if the item is over $100. A 24-hour buffer rarely changes a solid plan.' },
-    { test: () => score < 45 && !approved,
-      tip: '🚧 <strong>Red light reflection:</strong> Your own scoring says no. Reflect on what feeling you\u2019re trying to solve – boredom, stress, envy – and address it without spending.' },
-    { test: () => true,
-      tip: '💡 <strong>Friction is your friend:</strong> Delete saved cards from apps and browsers. The 60 seconds it takes to find your card is often enough to break the impulse loop.' },
-  ];
-  const tips = [];
-  for(const rule of TIP_RULES){
-    if(tips.length >= 2) break;
-    if(rule.test() && !tips.includes(rule.tip)) tips.push(rule.tip);
-  }
-  const tipsHtml = tips.length ? `
-      <div class="tips-banner">
-        <div class="tips-heading">💡 Smart Tips</div>
-        ${tips.map(t => `<div class="tip-line">${t}</div>`).join('')}
-      </div>` : '';
-
-  const html = `
-    <div class="result active">
-      <div class="rhead">${escapeHtml(CATEGORY_LABEL[cat])}</div>
-      <div class="rtitle">${escapeHtml(item)}: $${value.toFixed(2)}</div>
-      <div class="score-row">
-        <div class="score-bar-wrap">
-          <div class="score-bar-bg"><div class="score-bar-fill" style="width:0;background:${barColor}"></div></div>
-          <div class="score-meta">
-            <span>Score <strong>${score}/100</strong></span>
-            <span>${vClass === "veto" ? "REJECTED" : vClass === "caution" ? "CAUTION ZONE" : vClass === "approved" ? "APPROVED" : "STRONG BUY"}</span>
-          </div>
+  list.innerHTML=history.slice().reverse().map((entry,reversedIndex)=>{
+    const index=history.length-1-reversedIndex;
+    return `
+      <div class="history-item">
+        <div>
+          <div class="history-title">${escapeHtml(entry.item)} · R$ ${escapeHtml(entry.value)}</div>
+          <div class="history-meta">${escapeHtml(entry.verdict)} · Score ${entry.score} · Quarantine ${escapeHtml(entry.quarantine)} · ${escapeHtml(entry.date)}</div>
         </div>
-      </div>
-      ${secHtml(1,'Technical Viability / Asset',byFilter[1])}
-      ${secHtml(2,'Cost-Benefit / ROI',byFilter[2])}
-      ${secHtml(3,'Behavior / Habit',byFilter[3])}
-      <div class="verdict ${vClass}">
-        <div class="vlabel">${verdict}</div>
-        <div class="vsub">Final Score: ${score} / 100</div>
-        <ol>${directives.map(d=>`<li>${escapeHtml(d)}</li>`).join('')}</ol>
-      </div>${tipsHtml}
-    </div>`;
-
-  const r = document.getElementById('resultEl');
-  r.innerHTML = html;
-  r.classList.remove('active');
-  void r.offsetWidth; 
-  r.classList.add('active');
-  
-  setTimeout(() => {
-    const fill = r.querySelector('.score-bar-fill');
-    if(fill) fill.style.width = score + '%';
-  }, 50);
-
-  window.scrollTo({top:r.offsetTop-24, behavior:'smooth'});
-
-  const hist = loadHistory();
-  hist.push({item, value:value.toFixed(2), verdict, score, date:new Date().toLocaleDateString('en-US'), html});
-  saveHistory(hist); 
-  renderHistory();
+        <button type="button" data-delete="${index}" aria-label="Delete">×</button>
+      </div>`;
+  }).join('');
+  document.querySelectorAll('[data-delete]').forEach(button=>{
+    button.addEventListener('click',()=>{
+      const index=Number(button.dataset.delete);
+      const current=loadHistory();
+      current.splice(index,1);
+      saveHistory(current);
+      renderHistory();
+    });
+  });
 }
+
+document.getElementById('startBtn').addEventListener('click',startQuiz);
+document.getElementById('quizBack').addEventListener('click',goBack);
+document.getElementById('sliderNext').addEventListener('click',nextQuestion);
+document.getElementById('clearHistory').addEventListener('click',()=>{
+  if(confirm('Clear all history?')){
+    saveHistory([]);
+    renderHistory();
+  }
+});
 
 renderHistory();
 </script>
