@@ -203,13 +203,19 @@
 
   .verdict { border-radius: 16px; padding: 20px; margin-top: 24px; border: 1px solid transparent; }
   .verdict.approved { background: linear-gradient(to bottom right, #f0fdf4, #dcfce7); border-color: #bbf7d0; box-shadow: 0 4px 20px rgba(16, 185, 129, 0.1); }
+  .verdict.strong { background: linear-gradient(to bottom right, #ecfdf5, #d1fae5); border-color: #6ee7b7; box-shadow: 0 4px 20px rgba(16, 185, 129, 0.2); }
+  .verdict.caution { background: linear-gradient(to bottom right, #fffbeb, #fef3c7); border-color: #fcd34d; box-shadow: 0 4px 20px rgba(245, 158, 11, 0.15); }
   .verdict.veto { background: linear-gradient(to bottom right, #fff1f2, #ffe4e6); border-color: #fecdd3; box-shadow: 0 4px 20px rgba(244, 63, 94, 0.1); }
   .verdict .vlabel { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
   
   .verdict.approved .vlabel::before { content: "✓"; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: var(--pos); color: white; border-radius: 50%; font-size: 14px; }
+  .verdict.strong .vlabel::before { content: "✓"; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: #059669; color: white; border-radius: 50%; font-size: 14px; }
+  .verdict.caution .vlabel::before { content: "!"; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: #f59e0b; color: white; border-radius: 50%; font-size: 15px; font-weight: 800; }
   .verdict.veto .vlabel::before { content: "✕"; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: var(--neg); color: white; border-radius: 50%; font-size: 14px; }
   
   .verdict.approved .vlabel { color: var(--pos); }
+  .verdict.strong .vlabel { color: #059669; }
+  .verdict.caution .vlabel { color: #d97706; }
   .verdict.veto .vlabel { color: var(--neg); }
   .verdict .vsub { font-size: 13px; font-weight: 500; color: var(--muted); margin-bottom: 16px; opacity: 0.8; }
   .verdict ol { padding-left: 20px; font-size: 14px; line-height: 1.6; color: var(--ink); font-weight: 500; }
@@ -231,6 +237,8 @@
   
   .pill { font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 99px; letter-spacing: 0.02em; }
   .pill.approved { background: var(--pos-soft); color: var(--pos); }
+  .pill.strong { background: #d1fae5; color: #059669; }
+  .pill.caution { background: #fef3c7; color: #d97706; }
   .pill.veto { background: var(--neg-soft); color: var(--neg); }
   
   .empty { color: var(--muted); font-size: 14px; font-weight: 500; text-align: center; padding: 32px 0; background: var(--card); border-radius: 12px; border: 1px dashed var(--line); }
@@ -356,8 +364,8 @@ const QUESTIONS = [
     min:-16, max:16, minLabel:"Won't cover", maxLabel:'Comfortable'},
 ];
 
-const CATEGORY_BASE = { essencial:54, ferramenta:40, lazer:14, terceiro:11 };
-const THRESHOLD = 40;
+const CATEGORY_BASE = { essencial:44, ferramenta:28, lazer:34, terceiro:8 };
+const T_VETO = 40; const T_CAUTION = 60; const T_APPROVED = 80;
 const CATEGORY_LABEL = {
   essencial:'Essential', ferramenta:'Tool / Productive Equipment',
   lazer:'Leisure / Aesthetics / Convenience', terceiro:'Help / Loan to Third Party'
@@ -502,8 +510,8 @@ function renderHistory(){
   if(hist.length===0){ listEl.innerHTML = '<div class="empty">No analysis recorded yet.</div>'; return; }
   listEl.innerHTML = hist.slice().reverse().map((h,idx) => {
     const realIdx = hist.length-1-idx;
-    const cls = h.verdict.startsWith('APPROVED')?'approved':'veto';
-    const short = cls==='approved'?'APPROVED':'VETO';
+    const cls = h.verdict==='STRONG BUY'?'strong':h.verdict==='APPROVED'?'approved':h.verdict==='PROCEED WITH CAUTION'?'caution':'veto';
+    const short = h.verdict==='STRONG BUY'?'STRONG':h.verdict==='APPROVED'?'APPROVED':h.verdict==='PROCEED WITH CAUTION'?'CAUTION':'VETO';
     return `<div class="history-item">
       <div class="hi-body" onclick="showHistoryItem(${realIdx})">
         <div class="hi-top"><span>${escapeHtml(h.item)}</span><span>$${escapeHtml(h.value)}</span></div>
@@ -574,10 +582,12 @@ function runAnalysis(){
   }
 
   score = Math.max(0, Math.min(100, score));
-  const approved = score >= THRESHOLD;
-  const verdict = approved ? 'APPROVED' : 'REJECTED (VETO)';
-  const vClass = approved ? 'approved' : 'veto';
-  const barColor = approved ? 'var(--pos)' : 'var(--neg)';
+  let verdict, vClass, barColor;
+  if(score >= T_APPROVED){ verdict='STRONG BUY'; vClass='strong'; barColor='var(--pos)'; }
+  else if(score >= T_CAUTION){ verdict='APPROVED'; vClass='approved'; barColor='var(--pos)'; }
+  else if(score >= T_VETO){ verdict='PROCEED WITH CAUTION'; vClass='caution'; barColor='#f59e0b'; }
+  else { verdict='REJECTED'; vClass='veto'; barColor='var(--neg)'; }
+  const approved = score >= T_VETO;
 
   [1,2,3].forEach(f => { if(byFilter[f].length===0) byFilter[f].push({label:'No factor selected, neutral', w:0}); });
 
@@ -597,14 +607,18 @@ function runAnalysis(){
     q_emotion:'Address the feeling directly (a walk, a call, a break), not the purchase.'
   };
   
+  const negs = [1,2,3].flatMap(f => byFilter[f]).filter(x => x.w < 0 && x.qid).sort((a,b) => a.w - b.w);
   let directives;
-  if(!approved){
-    const negs = [1,2,3].flatMap(f => byFilter[f]).filter(x => x.w < 0 && x.qid).sort((a,b) => a.w - b.w);
+  if(vClass === 'veto'){
     directives = negs.slice(0,2).map(x => DIRECTIVE_MAP[x.qid]).filter(Boolean);
     if(directives.length === 0) directives = ['Better not to proceed right now.'];
-    if(directives.length === 1) directives.push('Re-run the audit if any negative factor changes.');
+    if(directives.length === 1) directives.push('Re-run if a negative factor changes.');
+  } else if(vClass === 'caution'){
+    directives = ['You can proceed, but be aware of the risks below.'];
+    directives.push(negs.length > 0 && DIRECTIVE_MAP[negs[0].qid]
+      ? 'Key risk: ' + DIRECTIVE_MAP[negs[0].qid].toLowerCase()
+      : 'No critical issues, but review your answers.');
   } else {
-    const negs = [1,2,3].flatMap(f => byFilter[f]).filter(x => x.w < 0 && x.qid).sort((a,b) => a.w - b.w);
     directives = ['You can go ahead.'];
     directives.push(negs.length > 0 && DIRECTIVE_MAP[negs[0].qid]
       ? 'Minor caveat: ' + DIRECTIVE_MAP[negs[0].qid].toLowerCase()
@@ -676,7 +690,7 @@ function runAnalysis(){
           <div class="score-bar-bg"><div class="score-bar-fill" style="width:0;background:${barColor}"></div></div>
           <div class="score-meta">
             <span>Score <strong>${score}/100</strong></span>
-            <span>Threshold <strong>${THRESHOLD}</strong></span>
+            <span>${vClass === "veto" ? "REJECTED" : vClass === "caution" ? "CAUTION ZONE" : vClass === "approved" ? "APPROVED" : "STRONG BUY"}</span>
           </div>
         </div>
       </div>
