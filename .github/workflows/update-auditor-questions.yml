@@ -1,0 +1,32 @@
+name: Update auditor questions
+
+on:
+  push:
+    paths:
+      - .github/workflows/update-auditor-questions.yml
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update questions
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          text = p.read_text()
+          text = text.replace("  {id:'q_return',f:2,type:'slider',text:'How much value or money will this return?',hint:'Treat the money as gone forever. Does it still make sense?',min:-16,max:16,minLabel:'No return',maxLabel:'Strong return'},\n", "")
+          text = text.replace("  {id:'q_motive',f:3,type:'buttons',text:'Which best describes your decision process?',hint:'Think about what happened immediately before the desire appeared.',opts:[\n    ['Planned in advance',8],['Decided just now',-8],['It felt urgent',-20]\n  ]},", "  {id:'q_motive',f:3,type:'buttons',text:'How long have you been considering this purchase?',hint:'Count from when you first seriously considered buying it.',opts:[\n    ['More than a week',8],['1 to 7 days',0],['Less than 24 hours',-12]\n  ]},")
+          p.write_text(text)
+          PY
+      - name: Commit and push
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add index.html
+          git commit -m "Refine purchase audit questions"
+          git push
