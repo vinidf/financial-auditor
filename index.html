@@ -381,7 +381,6 @@ const QUESTIONS=[
   {id:'q_price',f:2,type:'buttons',text:'Is the price fair for your situation?',hint:'Have you compared prices or does it merely feel acceptable?',opts:[
     ['Fair and reasonable',8],['Acceptable',2],['Too high',-12]
   ]},
-  {id:'q_return',f:2,type:'slider',text:'How much value or money will this return?',hint:'Treat the money as gone forever. Does it still make sense?',min:-16,max:16,minLabel:'No return',maxLabel:'Strong return'},
   {id:'q_longterm',f:2,type:'buttons',text:'Will it still be worthwhile one year from now?',hint:'Picture the item after novelty has faded.',opts:[
     ['Yes, clearly',10],['Maybe',0],['Probably not',-14]
   ]},
@@ -394,8 +393,8 @@ const QUESTIONS=[
   {id:'q_habit',f:3,type:'buttons',text:'Does this support a productive habit?',hint:'Does it build health, work or skill, or only fill a moment?',opts:[
     ['Yes, directly',14],['Indirectly',4],['No',-6]
   ]},
-  {id:'q_motive',f:3,type:'buttons',text:'Which best describes your decision process?',hint:'Think about what happened immediately before the desire appeared.',opts:[
-    ['Planned in advance',8],['Decided just now',-8],['It felt urgent',-20]
+  {id:'q_motive',f:3,type:'buttons',text:'How long have you been considering this purchase?',hint:'Count from when you first seriously considered buying it.',opts:[
+    ['More than a week',8],['1 to 7 days',0],['Less than 24 hours',-12]
   ]},
   {id:'q_budget',f:3,type:'slider',text:'How comfortably does it fit this month?',hint:'Name the bills or goals competing for this money.',min:-16,max:16,minLabel:'Does not fit',maxLabel:'Comfortable'}
 ];
