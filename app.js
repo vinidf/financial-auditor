@@ -1,17 +1,16 @@
 const STORAGE_KEY='financial_auditor_v5';
 
 const QUESTIONS=[
-  {id:'need',group:1,text:'Does this solve a real need right now?',hint:'If you did not buy this today, what would actually break or stop working?',options:[['Yes, needed',10],['Sort of',2],['Can wait',-6]]},
-  {id:'own',group:1,text:'Does this unlock a meaningful capability you do not currently have?',hint:'Consider what you already own and what it truly cannot do.',options:[['Yes, it adds a real capability',8],['Somewhat',2],['No, it mostly duplicates something',-14]]},
-  {id:'pattern',group:1,text:'Have you bought similar items recently that remain unused?',hint:'Recent unused purchases are a strong warning sign.',options:[['None',0],['One',-6],['Several',-14]]},
-  {id:'alternative',group:1,text:'Could you solve the same problem for less?',hint:'Think of at least one cheaper alternative before answering.',options:[['No, I compared options',6],['I have not checked seriously',-3],['Yes, there is a viable cheaper option',-12]]},
-  {id:'use',group:2,text:'How much realistic use will this get in the next 30 days?',hint:'Choose the closest realistic frequency.',options:[['Frequent use',10],['Occasional use',2],['Little or no use',-10]]},
-  {id:'price',group:2,text:'Is the price fair for your situation?',hint:'Consider both market price and your current budget.',options:[['Fair and reasonable',4],['Acceptable',1],['Too high',-10]]},
-  {id:'longterm',group:2,text:'Will it still be worthwhile one year from now?',hint:'Picture the item after the novelty has faded.',options:[['Yes, clearly',6],['Maybe',0],['Probably not',-8]]},
+  {id:'need',group:1,text:'Does this solve a real need right now?',hint:'If you did not buy this today, what would actually break or stop working?',options:[['Yes, needed',9],['Sort of',2],['Can wait',-6]]},
+  {id:'own',group:1,text:'Does this unlock a meaningful capability you do not currently have?',hint:'Consider what you already own and what it truly cannot do.',options:[['Yes, it adds a real capability',8],['Somewhat',2],['No, it mostly duplicates something',-13]]},
+  {id:'pattern',group:1,text:'Have you bought similar items recently that remain unused?',hint:'Recent unused purchases are a strong warning sign.',options:[['None',0],['One',-5],['Several',-12]]},
+  {id:'alternative',group:1,text:'Could you solve the same problem for less?',hint:'Think of at least one cheaper alternative before answering.',options:[['No, I compared options',5],['I have not checked seriously',-3],['Yes, there is a viable cheaper option',-11]]},
+  {id:'lasting_use',group:2,text:'How likely are you to keep using this after the initial novelty wears off?',hint:'Think beyond the first few weeks and choose the most realistic pattern.',options:[['Regularly for many months',12],['Occasionally or uncertain',1],['Probably only for a short time',-12]]},
+  {id:'price',group:2,text:'Is the price fair for your situation?',hint:'Consider both market price and your current budget.',options:[['Fair and reasonable',4],['Acceptable',1],['Too high',-9]]},
   {id:'trigger',group:3,text:'How did this item enter your radar?',hint:'Ads and feeds can manufacture urgency.',options:[['I searched for it',1],['Ad or algorithm',-3],['Social media or someone else has it',-6]]},
   {id:'emotion',group:3,text:'What is your emotional state right now?',hint:'Stress, boredom and excitement can distort spending decisions.',options:[['Calm and neutral',0],['Bored, stressed or anxious',-5],['Excited or euphoric',-4]]},
-  {id:'habit',group:3,text:'Does this support a productive habit?',hint:'Does it support health, work or skill development?',options:[['Yes, directly',6],['Indirectly',2],['No',-3]]},
-  {id:'consideration',group:3,text:'How long have you been considering this purchase?',hint:'Count from when you first seriously considered buying it.',options:[['More than a week',6],['1 to 7 days',1],['Less than 24 hours',-8]]},
+  {id:'habit',group:3,text:'Does this support a productive habit?',hint:'Does it support health, work or skill development?',options:[['Yes, directly',5],['Indirectly',2],['No',-3]]},
+  {id:'consideration',group:3,text:'How long have you been considering this purchase?',hint:'Count from when you first seriously considered buying it.',options:[['More than a week',5],['1 to 7 days',1],['Less than 24 hours',-7]]},
   {id:'budget',group:3,text:'How comfortably does it fit this month?',hint:'Consider bills and financial goals competing for this money.',options:[['Comfortably',8],['It will be tight',-6],['It does not fit',-18]]}
 ];
 
