@@ -1,21 +1,20 @@
 const STORAGE_KEY='financial_auditor_v5';
 
 const QUESTIONS=[
-  {id:'need',group:1,text:'Does this solve a real need right now?',hint:'If you did not buy this today, what would actually break or stop working?',options:[['Yes, needed',18],['Sort of',0],['Can wait',-15]]},
-  {id:'own',group:1,text:'Does this unlock a meaningful capability you do not currently have?',hint:'Consider what you already own and what it truly cannot do.',options:[['Yes, it adds a real capability',10],['Somewhat',0],['No, it mostly duplicates something',-22]]},
-  {id:'pattern',group:1,text:'Have you bought similar items recently that remain unused?',hint:'Recent unused purchases are a strong warning sign.',options:[['None',8],['One',-6],['Several',-20]]},
-  {id:'alternative',group:1,text:'Could you solve the same problem for less?',hint:'Think of at least one cheaper alternative before answering.',options:[['No, I compared options',14],['I have not checked seriously',-2],['Yes, there is a viable cheaper option',-16]]},
-  {id:'use',group:2,text:'How much realistic use will this get in the next 30 days?',hint:'Choose the closest realistic frequency.',options:[['Frequent use',15],['Occasional use',3],['Little or no use',-15]]},
-  {id:'price',group:2,text:'Is the price fair for your situation?',hint:'Consider both market price and your current budget.',options:[['Fair and reasonable',8],['Acceptable',2],['Too high',-12]]},
-  {id:'longterm',group:2,text:'Will it still be worthwhile one year from now?',hint:'Picture the item after the novelty has faded.',options:[['Yes, clearly',10],['Maybe',0],['Probably not',-14]]},
-  {id:'trigger',group:3,text:'How did this item enter your radar?',hint:'Ads and feeds can manufacture urgency.',options:[['I searched for it',6],['Ad or algorithm',-4],['Social media or someone else has it',-12]]},
-  {id:'emotion',group:3,text:'What is your emotional state right now?',hint:'Stress, boredom and excitement can distort spending decisions.',options:[['Calm and neutral',5],['Bored, stressed or anxious',-8],['Excited or euphoric',-6]]},
-  {id:'habit',group:3,text:'Does this support a productive habit?',hint:'Does it support health, work or skill development?',options:[['Yes, directly',14],['Indirectly',4],['No',-6]]},
-  {id:'consideration',group:3,text:'How long have you been considering this purchase?',hint:'Count from when you first seriously considered buying it.',options:[['More than a week',8],['1 to 7 days',0],['Less than 24 hours',-12]]},
-  {id:'budget',group:3,text:'How comfortably does it fit this month?',hint:'Consider bills and financial goals competing for this money.',options:[['Comfortably',16],['It will be tight',0],['It does not fit',-16]]}
+  {id:'need',group:1,text:'Does this solve a real need right now?',hint:'If you did not buy this today, what would actually break or stop working?',options:[['Yes, needed',10],['Sort of',2],['Can wait',-6]]},
+  {id:'own',group:1,text:'Does this unlock a meaningful capability you do not currently have?',hint:'Consider what you already own and what it truly cannot do.',options:[['Yes, it adds a real capability',8],['Somewhat',2],['No, it mostly duplicates something',-14]]},
+  {id:'pattern',group:1,text:'Have you bought similar items recently that remain unused?',hint:'Recent unused purchases are a strong warning sign.',options:[['None',0],['One',-6],['Several',-14]]},
+  {id:'alternative',group:1,text:'Could you solve the same problem for less?',hint:'Think of at least one cheaper alternative before answering.',options:[['No, I compared options',6],['I have not checked seriously',-3],['Yes, there is a viable cheaper option',-12]]},
+  {id:'use',group:2,text:'How much realistic use will this get in the next 30 days?',hint:'Choose the closest realistic frequency.',options:[['Frequent use',10],['Occasional use',2],['Little or no use',-10]]},
+  {id:'price',group:2,text:'Is the price fair for your situation?',hint:'Consider both market price and your current budget.',options:[['Fair and reasonable',4],['Acceptable',1],['Too high',-10]]},
+  {id:'longterm',group:2,text:'Will it still be worthwhile one year from now?',hint:'Picture the item after the novelty has faded.',options:[['Yes, clearly',6],['Maybe',0],['Probably not',-8]]},
+  {id:'trigger',group:3,text:'How did this item enter your radar?',hint:'Ads and feeds can manufacture urgency.',options:[['I searched for it',1],['Ad or algorithm',-3],['Social media or someone else has it',-6]]},
+  {id:'emotion',group:3,text:'What is your emotional state right now?',hint:'Stress, boredom and excitement can distort spending decisions.',options:[['Calm and neutral',0],['Bored, stressed or anxious',-5],['Excited or euphoric',-4]]},
+  {id:'habit',group:3,text:'Does this support a productive habit?',hint:'Does it support health, work or skill development?',options:[['Yes, directly',6],['Indirectly',2],['No',-3]]},
+  {id:'consideration',group:3,text:'How long have you been considering this purchase?',hint:'Count from when you first seriously considered buying it.',options:[['More than a week',6],['1 to 7 days',1],['Less than 24 hours',-8]]},
+  {id:'budget',group:3,text:'How comfortably does it fit this month?',hint:'Consider bills and financial goals competing for this money.',options:[['Comfortably',8],['It will be tight',-6],['It does not fit',-18]]}
 ];
 
-const CATEGORY_BASE={essential:44,tool:28,leisure:36,thirdparty:8};
 const CATEGORY_LABEL={essential:'Essential',tool:'Tool / Productive Equipment',leisure:'Leisure / Aesthetics / Convenience',thirdparty:'Help / Loan to Third Party'};
 let answers={};
 let step=0;
@@ -77,18 +76,14 @@ function showResult(){
   const item=$('itemName').value.trim();
   const value=Number($('itemValue').value);
   const category=$('itemCategory').value;
-  let dampen=1,bonus=0;
-  if(value<=30){dampen=.15;bonus=15}else if(value<=50){dampen=.3;bonus=12}else if(value<=150){dampen=.55;bonus=6}else if(value<=400){dampen=.8}
-  let score=CATEGORY_BASE[category]+bonus;
+  let score=50;
   const groups={1:[],2:[],3:[]};
   QUESTIONS.forEach(q=>{
     const answer=answers[q.id];
     if(!answer)return;
-    const weight=answer.weight<0?Math.round(answer.weight*dampen):answer.weight;
-    score+=weight;
-    groups[q.group].push({label:`${q.text}: ${answer.label}`,weight});
+    score+=answer.weight;
+    groups[q.group].push({label:`${q.text}: ${answer.label}`,weight:answer.weight});
   });
-  if(bonus)groups[2].push({label:'Low ticket: limited financial exposure',weight:bonus});
   score=Math.max(0,Math.min(100,score));
 
   let verdict='REJECTED',verdictClass='veto',status='REJECTED',color='var(--neg)';
@@ -107,7 +102,7 @@ function showResult(){
     <div class="rtitle">${escapeHtml(item)}: R$ ${value.toFixed(2)}</div>
     <div class="score-row"><div class="score-bar"><div class="score-fill" id="scoreFill" style="background:${color}"></div></div><div class="score-meta"><span>Score <strong>${score}/100</strong></span><span>${status}</span></div></div>
     ${sections}
-    <div class="verdict ${verdictClass}"><div class="vlabel">${verdict}</div><div class="vsub">Final score: ${score}/100</div><ol><li>${verdictClass==='veto'?'Do not buy it now. Complete the recommended quarantine first.':'Respect the quarantine before making the final decision.'}</li>${negatives[0]?`<li>Main concern: ${escapeHtml(negatives[0].q.text.toLowerCase())}</li>`:''}</ol></div>
+    <div class="verdict ${verdictClass}"><div class="vlabel">${verdict}</div><div class="vsub">Final score: ${score}/100 · Neutral baseline: 50</div><ol><li>${verdictClass==='veto'?'Do not buy it now. Complete the recommended quarantine first.':'Respect the quarantine before making the final decision.'}</li>${negatives[0]?`<li>Main concern: ${escapeHtml(negatives[0].q.text.toLowerCase())}</li>`:''}</ol></div>
     <div class="tips"><h4>💡 Smart Tips</h4><p>⏳ <strong>Purchase quarantine:</strong> Wait ${quarantine} before buying. If it still feels worthwhile afterward, reassess it calmly.</p>${negatives[0]?`<p>🧭 <strong>Main reflection:</strong> ${escapeHtml(negatives[0].q.hint)}</p>`:''}<p>💳 <strong>Friction is your friend:</strong> Remove saved cards from apps and browsers to interrupt impulse purchases.</p></div>
     <button class="btn result-redo" type="button" id="resultRedo">Audit Again</button>`;
   result.classList.add('active');
