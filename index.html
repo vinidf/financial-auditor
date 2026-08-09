@@ -15,42 +15,16 @@
     <h1>Financial Auditor</h1>
     <p>Pause, assess and make more intentional purchase decisions.</p>
   </header>
-
   <div class="card">
-    <div class="field">
-      <label for="itemName">Item</label>
-      <input id="itemName" type="text" placeholder="What are you considering buying?">
-    </div>
-    <div class="field">
-      <label for="itemValue">Amount (BRL)</label>
-      <input id="itemValue" type="number" min="0" step="0.01" placeholder="0.00">
-    </div>
-    <div class="field">
-      <label for="itemCategory">Category</label>
-      <select id="itemCategory">
-        <option value="essential">Essential</option>
-        <option value="tool">Tool / Productive Equipment</option>
-        <option value="leisure">Leisure / Aesthetics / Convenience</option>
-        <option value="thirdparty">Help / Loan to Third Party</option>
-      </select>
-    </div>
+    <div class="field"><label for="itemName">Item</label><input id="itemName" type="text" placeholder="What are you considering buying?"></div>
+    <div class="field"><label for="itemValue">Amount (BRL)</label><input id="itemValue" type="number" min="0" step="0.01" placeholder="0.00"></div>
+    <div class="field"><label for="itemCategory">Category</label><select id="itemCategory"><option value="essential">Essential</option><option value="tool">Tool / Productive Equipment</option><option value="leisure">Leisure / Aesthetics / Convenience</option><option value="thirdparty">Help / Loan to Third Party</option></select></div>
   </div>
-
-  <div class="card quiz-card" id="quizCard">
-    <div class="progress-row"><span class="progress-label" id="quizStepLabel"></span></div>
-    <div class="progress"><span id="quizFill"></span></div>
-    <div id="quizQuestion"></div>
-    <div class="quiz-nav"><button class="btn-ghost" id="quizBack" type="button">Back</button></div>
-  </div>
-
+  <div class="card quiz-card" id="quizCard"><div class="progress-row"><span class="progress-label" id="quizStepLabel"></span></div><div class="progress"><span id="quizFill"></span></div><div id="quizQuestion"></div><div class="quiz-nav"><button class="btn-ghost" id="quizBack" type="button">Back</button></div></div>
   <button class="btn" id="startBtn" type="button">Start Audit</button>
   <div class="card result" id="resultEl" style="margin-top:22px"></div>
-
-  <div class="card">
-    <div class="history-head"><h2>History</h2><button class="link-btn" id="clearHistory" type="button">Clear</button></div>
-    <div class="history-list" id="historyList"></div>
-  </div>
+  <div class="card"><div class="history-head"><h2>History</h2><button class="link-btn" id="clearHistory" type="button">Clear</button></div><div class="history-list" id="historyList"></div></div>
 </div>
-<script src="app.js?v=20260809-9"></script>
+<script src="app.js?v=20260809-10"></script>
 </body>
 </html>
