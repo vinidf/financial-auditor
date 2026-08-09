@@ -148,6 +148,7 @@ function showResult(){
   const sectionTitles={1:'Technical Viability / Asset',2:'Cost-Benefit',3:'Behavior / Habit'};
   const sections=[1,2,3].map(group=>`<div class="section"><h3>${group}. ${sectionTitles[group]}</h3>${groups[group].map(f=>`<div class="factor"><span>${escapeHtml(f.label)}</span><span class="badge ${f.weight>0?'pos':f.weight<0?'neg':'zero'}">${f.weight>0?'+':''}${f.weight}</span></div>`).join('')}</div>`).join('');
 
+  const rejectedDescription='This purchase is not sufficiently justified right now. Wait the recommended quarantine, then reassess whether the problem still matters and whether this is still the best solution.';
   const result=$('resultEl');
   result.innerHTML=`
     <div class="rhead">${escapeHtml(CATEGORY_LABEL[category])}</div>
@@ -155,7 +156,7 @@ function showResult(){
     <div class="score-row"><div class="score-bar"><div class="score-fill" id="scoreFill" style="background:${color}"></div></div><div class="score-meta"><span>Score <strong>${score}/100</strong></span><span>${status}</span></div></div>
     <div class="tips" style="margin-top:0;margin-bottom:20px"><h4>🎯 Pain / problem to solve</h4><p>${escapeHtml(pain)}</p></div>
     ${sections}
-    <div class="verdict ${verdictClass}"><div class="vlabel">${verdict}</div><div class="vsub">Final score: ${score}/100 · Neutral baseline: 50</div><ol><li>${verdictClass==='veto'?'Do not buy it now. Complete the recommended quarantine first.':'Respect the quarantine before making the final decision.'}</li>${negatives[0]?`<li>Main concern: ${escapeHtml(negatives[0].q.text.toLowerCase())}</li>`:''}</ol></div>
+    <div class="verdict ${verdictClass}"><div class="vlabel">${verdict}</div><div class="vsub">Final score: ${score}/100 · Neutral baseline: 50</div><ol><li>${verdictClass==='veto'?escapeHtml(rejectedDescription):'Respect the quarantine before making the final decision.'}</li>${negatives[0]?`<li>Main concern: ${escapeHtml(negatives[0].q.text.toLowerCase())}</li>`:''}</ol></div>
     <div class="tips"><h4>💡 Smart Tips</h4><p>⏳ <strong>Purchase quarantine:</strong> Wait ${quarantine} before buying. If it still feels worthwhile afterward, reassess it calmly.</p>${negatives[0]?`<p>🧭 <strong>Main reflection:</strong> ${escapeHtml(negatives[0].q.hint)}</p>`:''}<p>💳 <strong>Friction is your friend:</strong> Remove saved cards from apps and browsers to interrupt impulse purchases.</p></div>
     <button class="btn result-redo" type="button" id="resultRedo">Audit Again</button>`;
   result.classList.add('active');
@@ -164,7 +165,7 @@ function showResult(){
   result.scrollIntoView({behavior:'smooth',block:'start'});
 
   const history=loadHistory();
-  history.push({item,value:value.toFixed(2),category,pain,score,verdict,quarantine,date:new Date().toLocaleDateString('en-US')});
+  history.push({item,value:value.toFixed(2),category,pain,score,verdict,quarantine,date:new Date().toLocaleDateString('pt-BR')});
   saveHistory(history);
   renderHistory();
 }
@@ -186,14 +187,45 @@ function redo(entry){
   },250);
 }
 
+function historyCopyText(entry){
+  return `${entry.item||''} - R$ ${entry.value||''} - ${entry.score}/100 - Quarantine: ${entry.quarantine||''} - ${entry.date||''} - ${entry.pain||''}`;
+}
+
+async function copyHistoryEntry(index,button){
+  const entry=loadHistory()[index];
+  if(!entry)return;
+  const text=historyCopyText(entry);
+  try{
+    if(navigator.clipboard&&window.isSecureContext){
+      await navigator.clipboard.writeText(text);
+    }else{
+      const area=document.createElement('textarea');
+      area.value=text;
+      area.setAttribute('readonly','');
+      area.style.position='fixed';
+      area.style.opacity='0';
+      document.body.appendChild(area);
+      area.select();
+      document.execCommand('copy');
+      area.remove();
+    }
+    const previous=button.textContent;
+    button.textContent='Copied';
+    setTimeout(()=>{button.textContent=previous},1200);
+  }catch{
+    alert('Could not copy this item.');
+  }
+}
+
 function renderHistory(){
   const history=loadHistory(),list=$('historyList');
   if(!history.length){list.innerHTML='<div class="empty">No analysis recorded yet.</div>';return}
   list.innerHTML=history.slice().reverse().map((entry,reverseIndex)=>{
     const index=history.length-1-reverseIndex;
-    const pain=entry.pain?`<div class="history-meta" style="margin-top:7px"><strong>Pain:</strong> ${escapeHtml(entry.pain)}</div>`:'';
-    return `<div class="history-item"><div style="min-width:0"><div class="history-title">${escapeHtml(entry.item)} · R$ ${escapeHtml(entry.value)}</div><div class="history-meta">${escapeHtml(entry.verdict)} · Score ${entry.score} · Quarantine ${escapeHtml(entry.quarantine)} · ${escapeHtml(entry.date)}</div>${pain}</div><div class="history-actions"><button class="history-redo" type="button" data-redo="${index}">Audit Again</button><button class="history-delete" type="button" data-delete="${index}" aria-label="Delete">×</button></div></div>`;
+    const copyLine=historyCopyText(entry);
+    return `<div class="history-item"><div style="min-width:0"><div class="history-title" style="line-height:1.45">${escapeHtml(copyLine)}</div><div class="history-meta" style="margin-top:7px"><strong>${escapeHtml(entry.verdict||'')}</strong></div></div><div class="history-actions"><button class="history-redo" type="button" data-copy="${index}">Copy</button><button class="history-redo" type="button" data-redo="${index}">Audit Again</button><button class="history-delete" type="button" data-delete="${index}" aria-label="Delete">×</button></div></div>`;
   }).join('');
+  document.querySelectorAll('[data-copy]').forEach(button=>button.addEventListener('click',()=>copyHistoryEntry(Number(button.dataset.copy),button)));
   document.querySelectorAll('[data-redo]').forEach(button=>button.addEventListener('click',()=>redo(loadHistory()[Number(button.dataset.redo)])));
   document.querySelectorAll('[data-delete]').forEach(button=>button.addEventListener('click',()=>{const current=loadHistory();current.splice(Number(button.dataset.delete),1);saveHistory(current);renderHistory()}));
 }
