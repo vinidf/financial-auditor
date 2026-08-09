@@ -199,24 +199,42 @@ function historyCopyText(entry){
   return `${entry.item||''} - R$ ${entry.value||''} - ${entry.score}/100 - Quarantine: ${entry.quarantine||''} - ${normalizeHistoryDate(entry.date)} - Reason: ${entry.pain||''}`;
 }
 
+function legacyPlainTextCopy(text){
+  const area=document.createElement('textarea');
+  area.value=text;
+  area.setAttribute('readonly','');
+  area.setAttribute('aria-hidden','true');
+  area.style.position='fixed';
+  area.style.left='-9999px';
+  area.style.top='0';
+  area.style.font='16px sans-serif';
+  document.body.appendChild(area);
+  area.focus();
+  area.select();
+  const copied=document.execCommand('copy');
+  area.remove();
+  if(!copied)throw new Error('Copy failed');
+}
+
+async function writePlainTextClipboard(text){
+  if(navigator.clipboard&&window.isSecureContext&&typeof ClipboardItem!=='undefined'&&navigator.clipboard.write){
+    const blob=new Blob([text],{type:'text/plain'});
+    await navigator.clipboard.write([new ClipboardItem({'text/plain':blob})]);
+    return;
+  }
+  if(navigator.clipboard&&window.isSecureContext&&navigator.clipboard.writeText){
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+  legacyPlainTextCopy(text);
+}
+
 async function copyHistoryEntry(index,button){
   const entry=loadHistory()[index];
   if(!entry)return;
   const text=historyCopyText(entry);
   try{
-    if(navigator.clipboard&&window.isSecureContext){
-      await navigator.clipboard.writeText(text);
-    }else{
-      const area=document.createElement('textarea');
-      area.value=text;
-      area.setAttribute('readonly','');
-      area.style.position='fixed';
-      area.style.opacity='0';
-      document.body.appendChild(area);
-      area.select();
-      document.execCommand('copy');
-      area.remove();
-    }
+    await writePlainTextClipboard(text);
     const previous=button.textContent;
     button.textContent='Copied';
     setTimeout(()=>{button.textContent=previous},1200);
