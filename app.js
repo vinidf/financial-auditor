@@ -165,7 +165,7 @@ function showResult(){
   result.scrollIntoView({behavior:'smooth',block:'start'});
 
   const history=loadHistory();
-  history.push({item,value:value.toFixed(2),category,pain,score,verdict,quarantine,date:new Date().toLocaleDateString('pt-BR')});
+  history.push({item,value:value.toFixed(2),category,pain,score,verdict,quarantine,date:new Date().toLocaleDateString('en-US')});
   saveHistory(history);
   renderHistory();
 }
@@ -187,8 +187,17 @@ function redo(entry){
   },250);
 }
 
+function normalizeHistoryDate(date){
+  const value=String(date||'');
+  if(/^\d{2}\/\d{2}\/\d{4}$/.test(value)){
+    const [day,month,year]=value.split('/').map(Number);
+    return `${month}/${day}/${year}`;
+  }
+  return value;
+}
+
 function historyCopyText(entry){
-  return `${entry.item||''} - R$ ${entry.value||''} - ${entry.score}/100 - Quarantine: ${entry.quarantine||''} - ${entry.date||''} - ${entry.pain||''}`;
+  return `${entry.item||''} - R$ ${entry.value||''} - ${entry.score}/100 - Quarantine: ${entry.quarantine||''} - ${normalizeHistoryDate(entry.date)} - Reason: ${entry.pain||''}`;
 }
 
 async function copyHistoryEntry(index,button){
@@ -223,7 +232,7 @@ function renderHistory(){
   list.innerHTML=history.slice().reverse().map((entry,reverseIndex)=>{
     const index=history.length-1-reverseIndex;
     const copyLine=historyCopyText(entry);
-    return `<div class="history-item"><div style="min-width:0"><div class="history-title" style="line-height:1.45">${escapeHtml(copyLine)}</div><div class="history-meta" style="margin-top:7px"><strong>${escapeHtml(entry.verdict||'')}</strong></div></div><div class="history-actions"><button class="history-redo" type="button" data-copy="${index}">Copy</button><button class="history-redo" type="button" data-redo="${index}">Audit Again</button><button class="history-delete" type="button" data-delete="${index}" aria-label="Delete">×</button></div></div>`;
+    return `<div class="history-item"><div style="min-width:0"><div class="history-title">${escapeHtml(copyLine)}</div><div class="history-meta">${escapeHtml(entry.verdict||'')}</div></div><div class="history-actions"><button class="history-redo" type="button" data-copy="${index}">Copy</button><button class="history-redo" type="button" data-redo="${index}">Audit Again</button><button class="history-delete" type="button" data-delete="${index}" aria-label="Delete">×</button></div></div>`;
   }).join('');
   document.querySelectorAll('[data-copy]').forEach(button=>button.addEventListener('click',()=>copyHistoryEntry(Number(button.dataset.copy),button)));
   document.querySelectorAll('[data-redo]').forEach(button=>button.addEventListener('click',()=>redo(loadHistory()[Number(button.dataset.redo)])));
