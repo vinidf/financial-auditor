@@ -1,5 +1,18 @@
 const STORAGE_KEY='financial_auditor_v6';
 
+const PAIN_EXAMPLES=[
+  'e.g. I keep guessing water temperature and want precise control without a separate thermometer.',
+  'e.g. My current chair becomes uncomfortable during long work sessions.',
+  'e.g. I waste time moving one charger between rooms every day.',
+  'e.g. My current storage is crowded, so frequently used items are hard to reach.',
+  'e.g. I cannot hear calls clearly in noisy places with my current headphones.',
+  'e.g. Cleaning this area manually takes longer than I am willing to spend each week.',
+  'e.g. My current bag does not safely fit everything I regularly carry.',
+  'e.g. The room is too dark for reading comfortably at night.',
+  'e.g. My current tool cannot perform a task I now need to do regularly.',
+  'e.g. I keep using an inconvenient workaround every time I do this task.'
+];
+
 const QUESTIONS=[
   {id:'pain',type:'text',text:'What pain or problem would this purchase solve?',hint:'Describe the concrete friction, limitation or inconvenience in 140 characters or fewer.',maxLength:140},
   {id:'need',group:1,text:'Does this solve a real need right now?',hint:'If you did not buy this today, what would actually break or stop working?',options:[['Yes, needed',9],['Sort of',2],['Can wait',-6]]},
@@ -18,9 +31,18 @@ const QUESTIONS=[
 const CATEGORY_LABEL={essential:'Essential',tool:'Tool / Productive Equipment',leisure:'Leisure / Aesthetics / Convenience',thirdparty:'Help / Loan to Third Party'};
 let answers={};
 let step=0;
+let painExample='';
+let lastPainExample=-1;
 
 const $=id=>document.getElementById(id);
 const escapeHtml=value=>{const div=document.createElement('div');div.textContent=String(value??'');return div.innerHTML};
+
+function pickPainExample(){
+  let index=Math.floor(Math.random()*PAIN_EXAMPLES.length);
+  if(PAIN_EXAMPLES.length>1&&index===lastPainExample)index=(index+1)%PAIN_EXAMPLES.length;
+  lastPainExample=index;
+  return PAIN_EXAMPLES[index];
+}
 
 function quarantineFor(value){
   if(value<=50)return '2 hours';
@@ -44,6 +66,7 @@ function beginAudit(){
   if(!item||!Number.isFinite(value)||value<=0){alert('Fill in a valid item and amount.');return}
   answers={};
   step=0;
+  painExample=pickPainExample();
   $('startBtn').style.display='none';
   $('resultEl').classList.remove('active');
   $('quizCard').style.display='block';
@@ -61,7 +84,7 @@ function renderQuestion(){
     $('quizQuestion').innerHTML=`
       <div class="qtext">${escapeHtml(q.text)}</div>
       <div class="hint">${escapeHtml(q.hint)}</div>
-      <textarea id="textAnswer" maxlength="${q.maxLength}" rows="4" style="width:100%;resize:vertical;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:500 15px var(--sans);padding:14px 15px;border-radius:12px;line-height:1.45" placeholder="e.g. I want precise water temperature without using a separate thermometer.">${escapeHtml(current)}</textarea>
+      <textarea id="textAnswer" maxlength="${q.maxLength}" rows="4" style="width:100%;resize:vertical;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:500 15px var(--sans);padding:14px 15px;border-radius:12px;line-height:1.45" placeholder="${escapeHtml(painExample)}">${escapeHtml(current)}</textarea>
       <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;margin-top:8px">
         <span id="charCount" style="font-size:12px;color:var(--muted)">${current.length}/${q.maxLength}</span>
         <button class="btn-ghost" type="button" id="textContinue">Continue</button>
@@ -154,6 +177,7 @@ function redo(entry){
   answers={};
   if(entry.pain)answers.pain={label:entry.pain,weight:0,type:'text'};
   step=0;
+  painExample=pickPainExample();
   window.scrollTo({top:0,behavior:'smooth'});
   setTimeout(()=>{
     $('startBtn').style.display='none';
